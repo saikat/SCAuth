@@ -20,7 +20,7 @@
     sessionManager = [SCUserSessionManager defaultManager];
 }
 
-/*
+/* TODO: Actually write these tests
 - (void)testThatSyncSessionSendsCorrectInformationToBackend
 {}
 - (void)testSyncingSessionWhenLoggedOut

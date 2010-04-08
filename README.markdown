@@ -8,11 +8,16 @@ Installation
 
 Copy the entire SCAuth folder into your Frameworks folder, or any directory that you add using `OBJJ_INCLUDE_PATHS`.
 
+Example
+=======
+
+You can find the soure code and instructions on how to run an example of SCAuth at [http://github.com/saikat/SCAuthExample](http://github.com/saikat/SCAuthExample).
+
 How to use
 ==========
 
 ### Using what's already there ###
-Include the session manager in your code with `SCAuth/SCUserSessionManager.j`.  As soon as you do this, SCAuth will begin checking the response on every CPURLConnection your application makes for return codes of 401 (the HTTP response code for Unauthorized).  If your backend returns an HTTP response with status code 401, SCAuth will show a login panel to the user.  If the user logs in, the original request will be completed - otherwise, the original request will fail.  You can also display the login panel manually by calling `- [SCUserSessionManager login:]`.  Look at SCUserSessionManager.j for other API methods to access and modify the user's current session.
+Include the session manager in your code with `SCAuth/SCUserSessionManager.j`.  As soon as you do this, SCAuth will begin checking the response on every CPURLConnection your application makes for return codes of 401 (the HTTP response code for Unauthorized).  If your backend returns an HTTP response with status code 401, SCAuth will show a login panel to the user.  If the user logs in, the original request will be completed - otherwise, the original request will fail.  You can also display the login panel manually by calling `- [SCUserSessionManager login:]`.  Look at SCUserSessionManager.j for other API methods to access and modify the user's current session.  
 
 SCAuth also relies on your backend responding to certain URLs.  To specify the URLs used by SCAuth, you need to specify values for the following keys in your application's Info.plist:
 

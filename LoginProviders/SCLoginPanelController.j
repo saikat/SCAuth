@@ -15,7 +15,7 @@ var DefaultLoginPanelController = nil,
     DefaultLoginTitle = @"Login/Register",
     LoginTitle = @"Login",
     RegisterTitle = @"Register",
-    UserCheckErrorMessage = @"Error finding user. Check your internet connection.",
+    UserCheckErrorMessage = @"Error finding user - are you online?",
     GenericErrorMessage = @"Something went wrong. Try again in a few seconds.";
 
 SCLoginSucceeded = 0;
@@ -333,8 +333,8 @@ SCLoginFailed = 1;
         if (anErrorMessage === UserCheckErrorMessage) 
         {
             [_tryAgainButton setHidden:NO];
-            [_tryAgainButton setFrameOrigin:CGPointMake([_errorMessage frame].origin.x + [_errorMessage frame].size.width - [_tryAgainButton frame].size.width,
-                                                        [_errorMessage frame].origin.y + [_errorMessage frame].size.height - 4.0)];
+            [_tryAgainButton setFrameOrigin:CGPointMake([_errorMessage frame].origin.x + [_errorMessage frame].size.width - [_tryAgainButton frame].size.width - 2.0,
+                                                        [_errorMessage frame].origin.y + [_errorMessage frame].size.height - 2.0)];
         }
         else
             [_tryAgainButton setHidden:YES];
@@ -522,7 +522,7 @@ SCLoginFailed = 1;
         if (statusCode === 200)  
         {
             _panelReturnCode = SCLoginSucceeded;
-            _username = username;
+            _username = _loginConnection.username;
             [_window close];
         }
         else 
@@ -538,7 +538,7 @@ SCLoginFailed = 1;
         if (statusCode === 200) 
         {
             _panelReturnCode = SCLoginSucceeded;
-            _username = username;
+            _username = _registrationConnection.username;
             [_window close];
         }
         else 

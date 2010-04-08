@@ -104,6 +104,7 @@ var SCDefaultSessionManager = nil;
     if (_loginDelegate)
         return;
 
+    _loginDelegate = delegate;
     [_loginProvider loginWithDelegate:self callback:@selector(_loginFinishedWithCode:)];
 }
 
