@@ -1,3 +1,4 @@
 *~
 *.atlasproj
 .DS_Store
+Build/

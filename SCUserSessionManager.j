@@ -5,6 +5,14 @@
 
 var SCDefaultSessionManager = nil;
 
+/*! 
+    @ingroup appkit
+    @class SCUserSessionManager
+
+    This class manages a user's session data.  It is also responsible for dealing with 401
+    response codes from the backend and will automatically deal with these by using its
+    login provider to attempt to log the user in.
+*/
 
 @implementation SCUserSessionManager : CPUserSessionManager
 { 
@@ -26,6 +34,8 @@ var SCDefaultSessionManager = nil;
     return self;
 }
 
+/*!
+ */
 + (SCUserSessionManager)defaultManager
 {
     if (!SCDefaultSessionManager) 
