@@ -1,8 +1,6 @@
 @import "../LoginProviders/SCEmailLoginPanelController.j"
 @import <AppKit/AppKit.j>
 
-// TODO This kind of sucks to run all these tests in one shared application.  
-
 @implementation SCEmailLoginPanelControllerTest : OJTestCase
 { 
     SCEmailLoginPanelController testPanelController;

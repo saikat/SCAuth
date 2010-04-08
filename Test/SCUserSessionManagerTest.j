@@ -10,15 +10,14 @@
     sessionManager = [SCUserSessionManager defaultManager];
 }
 
+/*
 - (void)testThatSyncSessionSendsCorrectInformationToBackend
-{
-    var connectionMock = moq()
-}
-
+{}
 - (void)testSyncingSessionWhenLoggedOut
 {}
 - (void)testSuccessfulLogout
 {}
 - (void)testLogout
 {}
+*/
 @end

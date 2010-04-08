@@ -14,7 +14,7 @@ If you don't like the default login panel, you can make your own.  Your custom l
 * Have the method `- (void)loginWithDelegate:callback:` and call the callback on the delegate when the panel closes with either 0 (for successful login) or 1 (for a failed or cancelled login).
 * Have the method `- (CPString)username` that returns the username the user has entered in the login panel.
 
-Once you make a login panel and controller that adhere to this contract, in your application, you can call `[[SCUserSessionManager defaultManager] setLoginProvider:customLoginController]`.
+Once you make a a custom login panel and controler, in your application, you can call `[[SCUserSessionManager defaultManager] setLoginProvider:customLoginController]`.
 
 You can also change the methods used by the login panel to validate inputted usernames and passwords.  You can make your own account validator (as long as it implements all the methods that are in SCAuth/AccountValidators/SCAccountValidator.j), and then have your controller use it with `[customLoginController setAccountValidator:customAccountValidator]`.
 

@@ -3,8 +3,9 @@
 @import <AppKit/AppKit.j>
 
 // Uncomment the following line to turn on backtraces
-//objj_msgSend_decorate(objj_backtrace_decorator);
-// Run these tests with objj -I/Path/to/frameworks/ `which ojtest` Test/*.j
+// objj_msgSend_decorate(objj_backtrace_decorator);
+
+// Run these tests with objj -I/Path/to/frameworks/ `which ojtest` Test/*.j if you have custom test or Cappuccino frameworks
 
 // TODO I need this definition, or [CPPanel orderOut:] fails.  This shouldn't, ideally, be the case.
 function CPWindowObjectList()

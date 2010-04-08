@@ -5,10 +5,10 @@
 
 var SCDefaultSessionManager = nil;
 
+
 @implementation SCUserSessionManager : CPUserSessionManager
 { 
     id _loginDelegate;
-    // TODO Eventually do more with the login provider (like get facebook specific data if using facebook connect)
     id _loginProvider @accessors(property=loginProvider);
     CPURLConnection _loginConnection;
     CPURLConnection _logoutConnection;
