@@ -18,10 +18,10 @@ framework ("SCAuth", function(task)
     task.setProductName("SCAuth");
     task.setIdentifier("com.saikat.SCAuth");
     task.setVersion("0.1");
-    task.setAuthor("Ludwig Pettersson");
-    task.setEmail("luddep@gmail.com");
+    task.setAuthor("Saikat Chakrabarti");
+    task.setEmail("saikat@gomockingbird.com");
     task.setSummary("A collection of re-usable views, controls & utilities for Cappuccino.");
-    task.setSources(new FileList("*.j"));
+    task.setSources(new FileList("**/*.j"));
     task.setResources(new FileList("Resources/**/*"));
     //task.setEnvironments([browserEnvironment]);
     //task.setFlattensSources(true);

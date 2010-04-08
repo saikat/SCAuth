@@ -11,8 +11,8 @@ Include the session manager in your code with `SCAuth/SCUserSessionManager.j`.  
 
 ## Changing the login dialog
 If you don't like the default login panel, you can make your own.  Your custom login panel's controller will need to adhere to the following:
-* Have the method `- (void)loginWithDelegate:callback:` and call the callback on the delegate when the panel closes with either 0 (for successful login) or 1 (for a failed or cancelled login).
-* Have the method `- (CPString)username` that returns the username the user has entered in the login panel.
+ * Have the method `- (void)loginWithDelegate:callback:` and call the callback on the delegate when the panel closes with either 0 (for successful login) or 1 (for a failed or cancelled login).
+ * Have the method `- (CPString)username` that returns the username the user has entered in the login panel.
 
 Once you make a a custom login panel and controler, in your application, you can call `[[SCUserSessionManager defaultManager] setLoginProvider:customLoginController]`.
 
