@@ -1,3 +1,13 @@
+/*
+ * SCLoginPanelControllerTest.j
+ * SCAuth
+ *
+ * Created by Saikat Chakrabarti on April 7, 2010.
+ *
+ * See LICENSE file for license information.
+ * 
+ */
+
 @import "../LoginProviders/SCLoginPanelController.j"
 @import <OJMoq/OJMoq.j>
 @import <AppKit/AppKit.j>

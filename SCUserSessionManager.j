@@ -1,3 +1,13 @@
+/*
+ * SCUserSessionManager.j
+ * SCAuth
+ *
+ * Created by Saikat Chakrabarti on April 7, 2010.
+ *
+ * See LICENSE file for license information.
+ * 
+ */
+
 @import <Foundation/CPObject.j>
 @import <Foundation/CPURLConnection.j>
 @import <Foundation/CPUserSessionManager.j>

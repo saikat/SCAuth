@@ -1,3 +1,13 @@
+/*
+ * SCEmailAccountValidatorTest.j
+ * SCAuth
+ *
+ * Created by Saikat Chakrabarti on April 7, 2010.
+ *
+ * See LICENSE file for license information.
+ * 
+ */
+
 @import "../AccountValidators/SCEmailAccountValidator.j"
 
 @implementation SCEmailAccountValidatorTest : OJTestCase
