@@ -107,7 +107,7 @@ SCLoginFailed = 1;
 
 - (@action)forgotPasswordLinkClicked:(id)sender
 {
-    var forgotPasswordURL = [[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCForgotPasswordURL"];
+    var forgotPasswordURL = [[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthForgotPasswordURL"];
     if (forgotPasswordURL)
         if (window.open)
             window.open(forgotPasswordURL);
@@ -137,7 +137,7 @@ SCLoginFailed = 1;
         {
             var userIsValid = [_accountValidator validateUsername:[_userField stringValue]];
             if (!userIsValid) 
-                [self _setErrorMessageText:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCUserCheckErrorMessage"] || @"Please enter a valid username."];
+                [self _setErrorMessageText:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckErrorMessage"] || @"Please enter a valid username."];
             else 
             {
                 [self _registerUser:[_userField stringValue] password:[_passwordField stringValue]];
@@ -174,7 +174,7 @@ SCLoginFailed = 1;
 {
     var loginObject = {'username' : username,
                        'password' : password},
-        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCLoginURL"] || @"/session/"];
+        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
 
         [request setHTTPMethod:@"POST"];
         [request setHTTPBody:[CPString JSONFromObject:loginObject]];
@@ -187,7 +187,7 @@ SCLoginFailed = 1;
 {
     var registerObject = {'username' : username,
                           'password' : password},
-        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCRegistrationURL"] || @"/user/"];
+        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
 
         [request setHTTPMethod:@"POST"];
         [request setHTTPBody:[CPString JSONFromObject:registerObject]];
@@ -257,7 +257,7 @@ SCLoginFailed = 1;
     [_userCheckSpinner setHidden:NO];
     [self _setErrorMessageText:nil];
 
-    var request = [CPURLRequest requestWithURL:([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCUserCheckURL"] || @"/user/") + [_userField stringValue]];
+    var request = [CPURLRequest requestWithURL:([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckURL"] || @"/user/") + [_userField stringValue]];
   
     [request setHTTPMethod:@"GET"];
     _userCheckConnection = [_connectionClass connectionWithRequest:request
@@ -315,7 +315,7 @@ SCLoginFailed = 1;
 
 - (void)_displayForgotPasswordLink
 {
-    if ([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCForgotPasswordURL"])
+    if ([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthForgotPasswordURL"])
         [_forgotPasswordLink setHidden:NO];
     else
         [_forgotPasswordLink setHidden:YES];
@@ -497,7 +497,7 @@ SCLoginFailed = 1;
         else 
         {
             if (statusCode === 409) 
-                [self _registrationFailedWithError:@"That e-mail address is already registered!"];
+                [self _registrationFailedWithError:@"That username is already registered!"];
             else
                 [self _registrationFailedWithError:GenericErrorMessage];
         }
