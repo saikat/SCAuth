@@ -211,7 +211,8 @@ var SCDefaultSessionManager = nil;
 /* @ignore */
 - (void)loginDidFail:(id)sender
 {
-    [[_loginConnection delegate] connection:_loginConnection didFailWithError: [_loginConnection _XMLHTTPRequest].responseText];
+    if ([[_loginConnection delegate] respondsToSelector:@selector(connection:didFailWithError:)])
+        [[_loginConnection delegate] connection:_loginConnection didFailWithError: [_loginConnection _XMLHTTPRequest].responseText];
     _loginConnection = nil;
 }
 
