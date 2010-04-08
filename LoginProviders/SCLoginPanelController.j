@@ -11,6 +11,12 @@ var DefaultLoginPanelController = nil,
 SCLoginSucceeded = 0;
 SCLoginFailed = 1;
 
+/*! 
+    @class SCLoginPanelController
+
+    This is the controller for the default login panel built-in to SCAuth.
+*/
+
 @implementation SCLoginPanelController : CPWindowController
 {
     unsigned _panelReturnCode;
@@ -98,6 +104,7 @@ SCLoginFailed = 1;
              object:_window];
 }
 
+/* @ignore */
 - (void)_loginPanelClosed:(CPNotification)aNotification
 {
     [CPApp stopModalWithCode:CPRunStoppedResponse];  
@@ -156,6 +163,7 @@ SCLoginFailed = 1;
     }
 }
 
+/* @ignore */
 - (void)_loginFailedWithError:(CPString)errorMessageText
 {
     [self _setPanelModeToLogin];
@@ -164,12 +172,14 @@ SCLoginFailed = 1;
     [_passwordField selectText:self];
 }
 
+/* @ignore */
 - (void)_registrationFailedWithError:(CPString)errorMessageText
 {
     [self _setPanelModeToRegister];
     [self _setErrorMessageText:errorMessageText];
 }
 
+/* @ignore */
 - (void)_loginUser:(CPString)username password:(CPString)password
 {
     var loginObject = {'username' : username,
@@ -183,6 +193,7 @@ SCLoginFailed = 1;
         _loginConnection.username = username;
 }
 
+/* @ignore */
 - (void)_registerUser:(CPString)username password:(CPString)password
 {
     var registerObject = {'username' : username,
@@ -196,6 +207,7 @@ SCLoginFailed = 1;
         _registrationConnection.username = username;
 }
 
+/* @ignore */
 - (CGPoint)_setButtonOrigins
 {
     var frameToUse = [_passwordConfirmField frame];
@@ -220,6 +232,7 @@ SCLoginFailed = 1;
                                                         spinnerFrame.origin.y + spinnerFrame.size.height / 2.0 - [_loggingInProgressLabel frame].size.height / 2.0)];
 }
 
+/* @ignore */
 - (void)_sizeAndPositionFormFieldContainer
 {
     if ([_subheading isHidden])
@@ -230,6 +243,7 @@ SCLoginFailed = 1;
                                                  [_loginButton frame].origin.y + [_loginButton frame].size.height + 10.0)];
 }
 
+/* @ignore */
 - (void)_setKeyViews
 {
     if ([_passwordConfirmField isHidden]) 
@@ -245,6 +259,7 @@ SCLoginFailed = 1;
     }
 }
 
+/* @ignore */
 - (void)_sizeWindowToFit
 {
     var fieldFrame = [_formFieldContainer frame];
@@ -252,6 +267,7 @@ SCLoginFailed = 1;
                                      fieldFrame.origin.y + fieldFrame.size.height + 30.0)];
 }
 
+/* @ignore */
 - (void)_checkUser
 {
     [_userCheckSpinner setHidden:NO];
@@ -264,6 +280,7 @@ SCLoginFailed = 1;
                                                          delegate:self];
 }
 
+/* @ignore */
 - (void)_setSubheadingText:(CPString)aSubheading
 {
     if (!aSubheading) 
@@ -281,6 +298,7 @@ SCLoginFailed = 1;
     [self _sizeWindowToFit];
 }
 
+/* @ignore */
 - (void)_setErrorMessageText:(CPString)anErrorMessage
 {
     if (!anErrorMessage) 
@@ -313,6 +331,7 @@ SCLoginFailed = 1;
     }
 }
 
+/* @ignore */
 - (void)_displayForgotPasswordLink
 {
     if ([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthForgotPasswordURL"])
@@ -321,6 +340,7 @@ SCLoginFailed = 1;
         [_forgotPasswordLink setHidden:YES];
 }
 
+/* @ignore */
 - (void)_setDefaultHiddenSettings
 {
     [_userLabel setHidden:NO];
@@ -339,6 +359,7 @@ SCLoginFailed = 1;
     [self _setSubheadingText:nil];
 }
 
+/* @ignore */
 - (void)_setPanelModeToLogin
 {
     [self _setDefaultHiddenSettings];
@@ -350,6 +371,7 @@ SCLoginFailed = 1;
     [self _layout];
 }
 
+/* @ignore */
 - (void)_setPanelModeToRegister
 {
     [self _setDefaultHiddenSettings];
@@ -360,6 +382,7 @@ SCLoginFailed = 1;
     [self _layout];
 }
 
+/* @ignore */
 - (void)_setPanelModeToLoginOrRegister
 {
     [self _setDefaultHiddenSettings];
@@ -371,6 +394,7 @@ SCLoginFailed = 1;
     [self _layout];
 }
 
+/* @ignore */
 - (void)_layout
 {
     [self _setButtonOrigins];
@@ -379,6 +403,14 @@ SCLoginFailed = 1;
     [self _sizeWindowToFit];				
 }
 
+/*!
+    Creates a new login panel and run it modally.  The login panel can be used to either
+    log a user in or register a new user.  It expects the backend to respond to certain
+    URLs correctly - see README.markdown.
+    @param aDelegate - Should implement aCallback, which will get called with either 
+           SCLoginSucceeded or SCLoginFailed when the dialog closes
+    @param aCallback - Gets called on panel close
+ */
 - (void)loginWithDelegate:(id)aDelegate callback:(SEL)aCallback
 {
     [CPApp runModalForWindow:[self window]];
@@ -392,11 +424,17 @@ SCLoginFailed = 1;
     [_window makeFirstResponder:_userField];
 }
 
+/*!
+    Creates a new login panel controller
+ */
 + (SCLoginPanelController)newLoginPanelController
 {
     return [[self alloc] initWithWindowCibName:@"SCLoginPanel"];
 }
 
+/*!
+    Returns a default controller singleton
+ */
 + (SCLoginPanelController)defaultController
 {
     if (!DefaultLoginPanelController) 
@@ -404,7 +442,6 @@ SCLoginFailed = 1;
     return DefaultLoginPanelController;
 }
 
-/***** Callbacks *****/
 - (void)controlTextDidBlur:(CPNotification)aNotification
 {
     if ([aNotification object] !== _userField)
@@ -418,12 +455,12 @@ SCLoginFailed = 1;
     [self _checkUser];
 }
 
+/* @ignore */
 - (void)_userCheckFailed
 {
     [self _setPanelModeToLoginOrRegister];
     [self _setErrorMessageText:UserCheckErrorMessage];
 }
-
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException
 {

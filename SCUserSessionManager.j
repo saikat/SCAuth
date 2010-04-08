@@ -6,7 +6,6 @@
 var SCDefaultSessionManager = nil;
 
 /*! 
-    @ingroup appkit
     @class SCUserSessionManager
 
     This class manages a user's session data.  It is also responsible for dealing with 401
@@ -35,6 +34,7 @@ var SCDefaultSessionManager = nil;
 }
 
 /*!
+    Returns a SCUserSessionManager singleton that can be used app-wide.
  */
 + (SCUserSessionManager)defaultManager
 {
@@ -43,6 +43,16 @@ var SCDefaultSessionManager = nil;
     return SCDefaultSessionManager;
 }
 
+/*!
+    Synchronizes the session manager's data with the backend.  Expects the backend to either send
+    a 404 HTTP Response (which indicates that there is no session currently) or a 200 HTTP response
+    with a JSON object for the HTTP body that has the property username on it, specifying the
+    username of the currently logged in user.
+    @param delegate - Can implement - (void)sessionSyncDidFail:(CPUserSessionManager)sessionManager
+           which is called when the session sync fails. Can also implement 
+           - (void)sessionSyncDidFail:(CPUserSessionManager)sessionManager which is called when the 
+           session sync succeeds.
+ */
 - (void)syncSession:(id)delegate
 {
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthSyncURL"] || @"/session/"];
@@ -53,6 +63,14 @@ var SCDefaultSessionManager = nil;
     _sessionSyncConnection.delegate = delegate;
 }
 
+/*!
+    Logs out the current user.  Expects the backend to send a 200 HTTP Response to indicate that
+    the log out succeeded.
+    @param delegate - Can implement - (void)logoutDidFail:(CPUserSessionManager)sessionManager
+           which is called when the logout fails. Can also implement 
+           - (void)logoutDidSucceed:(CPUserSessionManager)sessionManager which is called when the 
+           logout succeeds.
+ */
 - (void)logout:(id)delegate
 {
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLogoutURL"] || @"/session/"];
@@ -63,6 +81,13 @@ var SCDefaultSessionManager = nil;
     _logoutConnection.delegate = delegate
 }
 
+/*!
+    Attempts to perform a login using the _loginProvider.
+    @param delegate - Can implement - (void)loginDidFail:(CPUserSessionManager)sessionManager
+           which is called when the login fails. Can also implement 
+           - (void)loginDidSucceed:(CPUserSessionManager)sessionManager which is called when the 
+           login succeeds.
+ */
 - (void)login:(id)delegate
 {
     // Login is already in progress
@@ -72,27 +97,32 @@ var SCDefaultSessionManager = nil;
     [_loginProvider loginWithDelegate:self callback:@selector(_loginFinishedWithCode:)];
 }
 
+/*!
+    Returns the current user identifier as a readable string.
+ */
 - (CPString)userDisplayName
 {
     return [self userIdentifier];
 }
 
+/* @ignore */
 - (void)_loginFinishedWithCode:(unsigned)returnCode
 {
     var selectorToPerform = nil;
     if (returnCode === SCLoginSucceeded) 
     {
         [self _setCurrentUser:[_loginProvider username]];
-        selectorToPerform = @selector(loginSucceeded:);
+        selectorToPerform = @selector(loginDidSucceed:);
     }
     else
-        selectorToPerform = @selector(loginFailed:);
+        selectorToPerform = @selector(loginDidFail:);
 
     if (selectorToPerform && _loginDelegate && [_loginDelegate respondsToSelector:selectorToPerform])
         [_loginDelegate performSelector:selectorToPerform withObject:self];
     _loginDelegate = nil;
 }
 
+/* @ignore */
 - (void)_setCurrentUser:(CPString)aUser
 {
     if (!aUser) 
@@ -160,19 +190,22 @@ var SCDefaultSessionManager = nil;
     }
 }
 
+/* @ignore */
 - (void)connectionDidReceiveAuthenticationChallenge:(CPURLConnection)aConnection
 {
     _loginConnection = aConnection;
     [self login:self];
 }
 
-- (void)loginFailed:(id)sender
+/* @ignore */
+- (void)loginDidFail:(id)sender
 {
     [[_loginConnection delegate] connection:_loginConnection didFailWithError: [_loginConnection _XMLHTTPRequest].responseText];
     _loginConnection = nil;
 }
 
-- (void)loginSucceeded:(id)sender
+/* @ignore */
+- (void)loginDidSucceed:(id)sender
 {
     [_loginConnection cancel];
     [_loginConnection start];

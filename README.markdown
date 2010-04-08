@@ -53,7 +53,7 @@ SCAuth also relies on your backend responding to certain URLs.  To specify the U
 ### Changing the login dialog ###
 If you don't like the default login panel, you can make your own and have SCUserSessionManager use it.  Your custom login panel's controller will need to adhere to the following:
 
-*	Have the method `- (void)loginWithDelegate:callback:`.  Your controller must then call the specified callback on the specified delegate when the panel closes, passing the callback and argument of either 0 (for successful login) or 1 (for a failed or cancelled login).
+*	Have the method `- (void)loginWithDelegate:callback:`.  Your controller must then call the specified callback on the specified delegate when the panel closes, passing the callback an argument of either 0 (for successful login) or 1 (for a failed or cancelled login).
 *	Have the method `- (CPString)username` that returns the username the user has entered in the login panel.
 
 Once you make a a custom login panel and controler, you can call `[[SCUserSessionManager defaultManager] setLoginProvider:customLoginController]` to use it.
