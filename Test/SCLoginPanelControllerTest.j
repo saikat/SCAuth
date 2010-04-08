@@ -3,7 +3,7 @@
 @import <AppKit/AppKit.j>
 
 // Uncomment the following line to turn on backtraces
-// objj_msgSend_decorate(objj_backtrace_decorator);
+//objj_msgSend_decorate(objj_backtrace_decorator);
 // Run these tests with objj -I/Path/to/frameworks/ `which ojtest` Test/*.j
 
 // TODO I need this definition, or [CPPanel orderOut:] fails.  This shouldn't, ideally, be the case.
@@ -40,11 +40,7 @@ function CPWindowObjectList()
     CPApp = nil;
 }
 
-- (void)testThatPanelGetsCreated
-{
-    [self assertTrue:!!testController];
-}
-
+// /* Helpers */
 - (void)checkInitialHiddenSettings
 {
     [self assertTrue:[[testController registeringProgressLabel] isHidden]];
@@ -58,49 +54,83 @@ function CPWindowObjectList()
 
 - (void)checkThatDialogIsInLoginOrRegisterMode
 {
-    [self assertTrue:([[testController loginButton] title] === @"Login/Register")];
+    [self assert:[[testController loginButton] title] equals:@"Login/Register"];
     [self assertTrue:[[testController passwordConfirmLabel] isHidden]];
     [self assertTrue:[[testController passwordConfirmField] isHidden]];
-    [self assertTrue:[[testController passwordConfirmField] stringValue] === ""];
+    [self assert:[[testController passwordConfirmField] stringValue] equals:""];
     [self checkInitialHiddenSettings];
 }
 
 - (void)checkThatDialogIsInLoginMode
 {
-    [self assertTrue:([[testController loginButton] title] === @"Login")];
+    [self assert:[[testController loginButton] title] equals:@"Login"];
     [self assertTrue:[[testController passwordConfirmLabel] isHidden]];
     [self assertTrue:[[testController passwordConfirmField] isHidden]];
-    [self assertTrue:[[testController passwordConfirmField] stringValue] === ""];
+    [self assert:[[testController passwordConfirmField] stringValue] equals:""];
     [self checkInitialHiddenSettings];
 }
 
 - (void)checkThatDialogIsInRegisterMode
 {
-    [self assertTrue:([[testController loginButton] title] === @"Register")];
+    [self assert:[[testController loginButton] title] equals:@"Register"];
     [self assertFalse:[[testController passwordConfirmLabel] isHidden]];
     [self assertFalse:[[testController passwordConfirmField] isHidden]];
     [self checkInitialHiddenSettings];
 }
 
-- (void)testInitialStateOfPanel
+- (void)checkThatURLIsHit:(CPString)URL withMethod:(CPString)HTTPMethod withBody:(CPString)aBody whenControlIsClicked:(CPControl)aControl
+{
+    var mockConnectionClass = moq(),
+        madeRequest = nil;
+
+    [mockConnectionClass selector:@selector(connectionWithRequest:delegate:) callback:(function(args) {madeRequest = args[0];})];
+    [mockConnectionClass selector:@selector(connectionWithRequest:delegate:) times:1];
+
+    [testController setConnectionClass:mockConnectionClass];
+    [aControl performClick:self];
+    [mockConnectionClass verifyThatAllExpectationsHaveBeenMet];
+    [self assert:[[madeRequest URL] relativeString] equals:URL];
+    [self assert:[madeRequest HTTPMethod] equals:HTTPMethod];
+    [self assert:[madeRequest HTTPBody] equals:aBody];
+}
+
+- (void)startDialogWithStub
 {
     var delegateMock = moq();
     [testController loginWithDelegate:delegateMock callback:@selector(didFinishSelector:)];
-    [self assertTrue:([[testController passwordField] stringValue] === "")];
-    [self assertTrue:([[testController passwordConfirmField] stringValue] === "")];
-    [self assertTrue:([[testController window] firstResponder] === [testController userField])];
+}
+
+/* Tests */
+- (void)testThatPanelGetsCreated
+{
+    [self assertTrue:!!testController];
+}
+
+- (void)testInitialStateOfPanel
+{
+    [self startDialogWithStub];
+    [self assert:[[testController passwordField] stringValue] equals:""];
+    [self assert:[[testController passwordConfirmField] stringValue] equals:""];
+    [self assert:[[testController window] firstResponder] equals:[testController userField]];
     [self assertTrue:[[testController forgotPasswordLink] isHidden]];
     [self checkThatDialogIsInLoginOrRegisterMode];
 }
 
 - (void)testInitialStateOfPanelWhenForgotPasswordInformationExists
 {
-    var delegateMock = moq();
-    [testController loginWithDelegate:delegateMock callback:@selector(didFinishSelector:)];
-    [self assertTrue:([[testController passwordField] stringValue] === "")];
-    [self assertTrue:([[testController passwordConfirmField] stringValue] === "")];
-    [self assertTrue:([[testController window] firstResponder] === [testController userField])];
+    var mainBundle = [CPBundle mainBundle];
+    mainBundle._bundle.valueForInfoDictionaryKey = function(aKey) 
+    {
+        if(aKey === "SCForgotPasswordURL") 
+            return "forgot_password_url"; 
+        return nil;
+    }
+    [self startDialogWithStub];
+    [self assert:[[testController passwordField] stringValue] equals:""];
+    [self assert:[[testController passwordConfirmField] stringValue] equals:""];
+    [self assert:[[testController window] firstResponder] equals:[testController userField]];
     [self checkThatDialogIsInLoginOrRegisterMode];
+    [self assertFalse:[[testController forgotPasswordLink] isHidden]];
 }
 
 - (void)testClosingPanel
@@ -112,26 +142,99 @@ function CPWindowObjectList()
     [delegateMock verifyThatAllExpectationsHaveBeenMet];
 }
 
-/*
+
+// This test doesn't actually do anything.  Just checking for exceptions.
 - (void)testClickingForgotPasswordLink
 {
+    [self startDialogWithStub];
+    var mainBundle = [CPBundle mainBundle];
+    mainBundle._bundle.valueForInfoDictionaryKey = function(aKey) 
+    {
+        if(aKey === "SCForgotPasswordURL") 
+            return "forgot_password_url"; 
+        return nil;
+    }
+    
+    [testController forgotPasswordLinkClicked:self];
 }
 
-- (void)testClickingTryAgainButton
-{}
+- (void)testThatClickingTryAgainButtonAsksBackendForTheUser
+{
+    [self startDialogWithStub];
+    [[testController userField] setStringValue:@"test@test.com"];
+    [testController _userCheckFailed];
+    [self assert:[[testController errorMessage] stringValue] notEqual:""];
+    [self assertFalse:[[testController tryAgainButton] isHidden]];
+
+    [self checkThatURLIsHit:@"/user/test@test.com" withMethod:@"GET" withBody:@"" whenControlIsClicked:[testController tryAgainButton]];
+
+    [self assertFalse:[[testController userCheckSpinner] isHidden]];
+    [self assertTrue:[[testController errorMessage] isHidden]];
+}
 
 - (void)testClickingCancel
-{}
+{
+    var delegateMock = moq();
+    [delegateMock selector:@selector(didFinishSelector:) times:1 arguments:[SCLoginFailed]];
+    [testController loginWithDelegate:delegateMock callback:@selector(didFinishSelector:)];
+    [[testController cancelButton] performClick:self];
+    [delegateMock verifyThatAllExpectationsHaveBeenMet];
+}
 
-- (void)testClickingRegisterInRegisterMode
-{}
+- (void)testThatClickingRegisterInRegisterModeAsksBackendToRegister
+{
+    [self startDialogWithStub];
+    [testController _setPanelModeToRegister];
+    [[testController userField] setStringValue:@"test@test.com"];
+    [[testController passwordField] setStringValue:@"test"];
+    [[testController passwordConfirmField] setStringValue:@"test"];
+    
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test'}];
+    [self checkThatURLIsHit:@"/user/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
+}
 
-- (void)testClickingLoginInLoginMode
-{}
+- (void)testThatClickingLogininLoginModeAsksBackendToLogin
+{
+    [self startDialogWithStub];
+    [testController _setPanelModeToLogin];
+    [[testController userField] setStringValue:@"test@test.com"];
+    [[testController passwordField] setStringValue:@"test"];
+    [[testController passwordConfirmField] setStringValue:@""];
+    
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test'}];
+    [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
+}
 
-- (void)testClickingLoginInLoginOrRegisterMode
-{}
+- (void)testClickingLoginInLoginOrRegisterModeAsksBackendToLogin
+{
+    [self startDialogWithStub];
+    [testController _setPanelModeToLoginOrRegister];
+    [[testController userField] setStringValue:@"test@test.com"];
+    [[testController passwordField] setStringValue:@"test"];
+    [[testController passwordConfirmField] setStringValue:@""];
+    
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test'}];
+    [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
+}
 
+- (void)testClickingRegisterWithMismatchedPasswords
+{
+    [self startDialogWithStub];
+    [testController _setPanelModeToRegister];
+    [[testController userField] setStringValue:@"test@test.com"];
+    [[testController passwordField] setStringValue:@"test"];
+    [[testController passwordConfirmField] setStringValue:@"test1"];
+
+    var mockConnectionClass = moq();
+    [mockConnectionClass selector:@selector(connectionWithRequest:delegate:) times:0];
+    [testController setConnectionClass:mockConnectionClass];
+    [[testController loginButton] performClick:self];
+    [mockConnectionClass verifyThatAllExpectationsHaveBeenMet];
+    [self assertFalse:[[testController errorMessage] isHidden]];
+    [self assert:[[testController errorMessage] stringValue] notEqual:@""];
+}
+
+/*
 - (void)testHittingEnterInConfirmPasswordField
 {}
 

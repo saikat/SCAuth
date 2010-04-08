@@ -21,6 +21,8 @@ SCLoginFailed = 1;
     CPURLConnection _loginConnection;
     CPURLConnection _registrationConnection;
     id _accountValidator @accessors(property=accountValidator);
+    // I use this for dependency injection in the tests
+    CPObject _connectionClass @accessors(property=connectionClass);
 
     @outlet CPButton _tryAgainButton @accessors(property=tryAgainButton);
     @outlet CPTextField _subheading @accessors(property=subheading);
@@ -44,6 +46,7 @@ SCLoginFailed = 1;
 - (void)awakeFromCib
 {
     _accountValidator = SCAccountValidator;
+    _connectionClass = CPURLConnection;
     [_window setAutorecalculatesKeyViewLoop:NO];
     [_window setDefaultButton:_loginButton];
     [_userLabel sizeToFit];
@@ -106,7 +109,8 @@ SCLoginFailed = 1;
 {
     var forgotPasswordURL = [[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCForgotPasswordURL"];
     if (forgotPasswordURL)
-        window.open(forgotPasswordURL);
+        if (window.open)
+            window.open(forgotPasswordURL);
 }
 
 - (@action)tryCheckUserAgain:(id)sender
@@ -174,7 +178,7 @@ SCLoginFailed = 1;
 
         [request setHTTPMethod:@"POST"];
         [request setHTTPBody:[CPString JSONFromObject:loginObject]];
-        _loginConnection = [CPURLConnection connectionWithRequest:request
+        _loginConnection = [_connectionClass connectionWithRequest:request
                                                          delegate:self];
         _loginConnection.username = username;
 }
@@ -187,7 +191,7 @@ SCLoginFailed = 1;
 
         [request setHTTPMethod:@"POST"];
         [request setHTTPBody:[CPString JSONFromObject:registerObject]];
-        _registrationConnection = [CPURLConnection connectionWithRequest:request
+        _registrationConnection = [_connectionClass connectionWithRequest:request
                                                                 delegate:self];
         _registrationConnection.username = username;
 }
@@ -256,7 +260,7 @@ SCLoginFailed = 1;
     var request = [CPURLRequest requestWithURL:([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCUserCheckURL"] || @"/user/") + [_userField stringValue]];
   
     [request setHTTPMethod:@"GET"];
-    _userCheckConnection = [CPURLConnection connectionWithRequest:request
+    _userCheckConnection = [_connectionClass connectionWithRequest:request
                                                          delegate:self];
 }
 
@@ -296,16 +300,16 @@ SCLoginFailed = 1;
         [_errorMessage setFrame:CGRectMake(frameToUse.origin.x - 5.0 - 108,
                                            yOrigin,
                                            108, 
-                                           height)]
+                                           height)];
 
-            if (anErrorMessage === UserCheckErrorMessage) 
-            {
-                [_tryAgainButton setHidden:NO];
-                [_tryAgainButton setFrameOrigin:CGPointMake([_errorMessage frame].origin.x + [_errorMessage frame].size.width - [_tryAgainButton frame].size.width,
-                                                            [_errorMessage frame].origin.y + [_errorMessage frame].size.height - 4.0)];
-            }
-            else
-                [_tryAgainButton setHidden:YES];
+        if (anErrorMessage === UserCheckErrorMessage) 
+        {
+            [_tryAgainButton setHidden:NO];
+            [_tryAgainButton setFrameOrigin:CGPointMake([_errorMessage frame].origin.x + [_errorMessage frame].size.width - [_tryAgainButton frame].size.width,
+                                                        [_errorMessage frame].origin.y + [_errorMessage frame].size.height - 4.0)];
+        }
+        else
+            [_tryAgainButton setHidden:YES];
     }
 }
 
@@ -414,6 +418,12 @@ SCLoginFailed = 1;
     [self _checkUser];
 }
 
+- (void)_userCheckFailed
+{
+    [self _setPanelModeToLoginOrRegister];
+    [self _setErrorMessageText:UserCheckErrorMessage];
+}
+
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException
 {
@@ -423,8 +433,7 @@ SCLoginFailed = 1;
         [self _registerFailedWithError:GenericErrorMessage];
     else if (connection === _userCheckConnection) 
     {
-        [self _setPanelModeToLoginOrRegister];
-        [self _setErrorMessageText:UserCheckErrorMessage];
+        [self _userCheckFailed];
     }
 }
 
@@ -436,8 +445,7 @@ SCLoginFailed = 1;
         switch (aConnection) 
         {
         case _userCheckConnection:
-            [self _setPanelModeToLoginOrRegister];
-            [self _setErrorMessageText:UserCheckErrorMessage];
+            [self _userCheckFailed];
             break;
             
         case _loginConnection:
