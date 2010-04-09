@@ -205,6 +205,7 @@ var SCDefaultSessionManager = nil;
 - (void)connectionDidReceiveAuthenticationChallenge:(CPURLConnection)aConnection
 {
     _loginConnection = aConnection;
+    [_loginConnection cancel];
     [self _setCurrentUser:nil];
     [self login:self];
 }
@@ -213,14 +214,13 @@ var SCDefaultSessionManager = nil;
 - (void)loginDidFail:(id)sender
 {
     if ([[_loginConnection delegate] respondsToSelector:@selector(connection:didFailWithError:)])
-        [[_loginConnection delegate] connection:_loginConnection didFailWithError: [_loginConnection _XMLHTTPRequest].responseText];
+        [[_loginConnection delegate] connection:_loginConnection didFailWithError: [_loginConnection _HTTPRequest].responseText];
     _loginConnection = nil;
 }
 
 /* @ignore */
 - (void)loginDidSucceed:(id)sender
 {
-    [_loginConnection cancel];
     [_loginConnection start];
     _loginConnection = nil;
 }
