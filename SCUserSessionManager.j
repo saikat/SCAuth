@@ -205,6 +205,7 @@ var SCDefaultSessionManager = nil;
 - (void)connectionDidReceiveAuthenticationChallenge:(CPURLConnection)aConnection
 {
     _loginConnection = aConnection;
+    [self _setCurrentUser:nil];
     [self login:self];
 }
 
