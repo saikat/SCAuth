@@ -291,24 +291,6 @@ SCLoginFailed = 1;
 }
 
 /* @ignore */
-- (void)_setSubheadingText:(CPString)aSubheading
-{
-    if (!aSubheading) 
-        [_subheading setHidden:YES];
-    else 
-    {
-        [_subheading setStringValue:a_Subheading];
-        [_subheading setHidden:NO];
-        var fieldFrame = [_formFieldContainer frame],
-            size = [aSubheading sizeWithFont:[_subheading font]
-                                     inWidth:fieldFrame.size.width + 16.0];
-        [_subheading setFrame:CGRectMake(0, 0, size.width, size.height + 18.0)];
-    }
-    [self _sizeAndPositionFormFieldContainer];
-    [self _sizeWindowToFit];
-}
-
-/* @ignore */
 - (void)_setErrorMessageText:(CPString)anErrorMessage
 {
     if (!anErrorMessage) 
@@ -366,7 +348,7 @@ SCLoginFailed = 1;
     [_formFieldContainer setHidden:NO];
     [_tryAgainButton setHidden:YES];
     [self _setErrorMessageText:nil];
-    [self _setSubheadingText:nil];
+    [self setSubheadingText:nil];
 }
 
 /* @ignore */
@@ -432,6 +414,26 @@ SCLoginFailed = 1;
     [_passwordField setStringValue:""];
     [_passwordConfirmField setStringValue:""];
     [_window makeFirstResponder:_userField];
+}
+
+/*!
+    Add a subheading to the login panel explaining why the login panel appeared.
+ */
+- (void)setSubheadingText:(CPString)aSubheading
+{
+    if (!aSubheading) 
+        [_subheading setHidden:YES];
+    else 
+    {
+        [_subheading setStringValue:aSubheading];
+        [_subheading setHidden:NO];
+        var fieldFrame = [_formFieldContainer frame],
+            size = [aSubheading sizeWithFont:[_subheading font]
+                                     inWidth:fieldFrame.size.width + 16.0];
+        [_subheading setFrame:CGRectMake(0, 0, size.width, size.height + 18.0)];
+    }
+    [self _sizeAndPositionFormFieldContainer];
+    [self _sizeWindowToFit];
 }
 
 /*!

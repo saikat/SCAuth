@@ -208,6 +208,9 @@ var SCDefaultSessionManager = nil;
     [_loginConnection cancel];
     [self _setCurrentUser:nil];
     [self login:self];
+    if ([[_loginConnection delegate] respondsToSelector:@selector(sessionManagerDidInterceptAuthenticationChallenge:)])
+        [[_loginConnection delegate] sessionManagerDidInterceptAuthenticationChallenge:self];
+    
 }
 
 /* @ignore */
