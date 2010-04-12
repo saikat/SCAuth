@@ -16,7 +16,8 @@ var DefaultLoginPanelController = nil,
     LoginTitle = @"Login",
     RegisterTitle = @"Register",
     UserCheckErrorMessage = @"Error finding user - are you online?",
-    GenericErrorMessage = @"Something went wrong. Try again in a few seconds.";
+    GenericErrorMessage = @"Something went wrong. Try again in a few seconds.",
+    ConnectionStatusCode = -1;
 
 SCLoginSucceeded = 0;
 SCLoginFailed = 1;
@@ -174,7 +175,7 @@ SCLoginFailed = 1;
 }
 
 /* @ignore */
-- (void)_loginFailedWithError:(CPString)errorMessageText
+- (void)_loginFailedWithError:(CPString)errorMessageText statusCode:(int)statusCode
 {
     [self _setPanelModeToLogin];
     [self _setErrorMessageText:errorMessageText];
@@ -183,7 +184,7 @@ SCLoginFailed = 1;
 }
 
 /* @ignore */
-- (void)_registrationFailedWithError:(CPString)errorMessageText
+- (void)_registrationFailedWithError:(CPString)errorMessageText statusCode:(int)statusCode
 {
     [self _setPanelModeToRegister];
     [self _setErrorMessageText:errorMessageText];
@@ -197,7 +198,7 @@ SCLoginFailed = 1;
 
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:[CPString JSONFromObject:loginObject]];
-    _loginConnection = [_connnectionClass connectionWithRequest:request
+    _loginConnection = [_connectionClass connectionWithRequest:request
                                                        delegate:self];
     _loginConnection.username = username;
 }
@@ -466,7 +467,7 @@ SCLoginFailed = 1;
 }
 
 /* @ignore */
-- (void)_userCheckFailed
+- (void)_userCheckFailedWithStatusCode:(int)statusCode
 {
     [self _setPanelModeToLoginOrRegister];
     [self _setErrorMessageText:UserCheckErrorMessage];
@@ -475,13 +476,11 @@ SCLoginFailed = 1;
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException
 {
     if (connection === _loginConnection) 
-        [self _loginFailedWithError:GenericErrorMessage];
+        [self _loginFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
     else if (connection === _registrationConnection) 
-        [self _registerFailedWithError:GenericErrorMessage];
+        [self _registrationFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
     else if (connection === _userCheckConnection) 
-    {
-        [self _userCheckFailed];
-    }
+        [self _userCheckFailedWithStatusCode:ConnectionStatusCode];
 }
 
 - (void)connection:(CPURLConnection)aConnection didReceiveResponse:(CPURLResponse)aResponse
@@ -492,11 +491,15 @@ SCLoginFailed = 1;
         switch (aConnection) 
         {
         case _userCheckConnection:
-            [self _userCheckFailed];
+            [self _userCheckFailedWithStatusCode:ConnectionStatusCode];
             break;
             
         case _loginConnection:
+            [self _loginFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
+            break;
         case _registrationConnection:
+            [self _registrationFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
+            break;
         default:
             [self _setErrorMessageText:GenericErrorMessage];
         }
@@ -512,10 +515,7 @@ SCLoginFailed = 1;
         else if (statusCode == 404) 
             [self _setPanelModeToRegister];
         else 
-        {
-            [self _setPanelModeToLoginOrRegister];
-            [self _setErrorMessageText:UserCheckErrorMessage];
-        }
+            [self _userCheckFailedWithStatusCode:statusCode];
         break;
 
     case _loginConnection:
@@ -528,9 +528,9 @@ SCLoginFailed = 1;
         else 
         {
             if (statusCode === 403) 
-                [self _loginFailedWithError:@"Invalid username and/or password."];
+                [self _loginFailedWithError:@"Invalid username and/or password." statusCode:statusCode];
             else
-                [self _loginFailedWithError:GenericErrorMessage];
+                [self _loginFailedWithError:GenericErrorMessage statusCode:statusCode];
         }
         break;
 
@@ -544,9 +544,9 @@ SCLoginFailed = 1;
         else 
         {
             if (statusCode === 409) 
-                [self _registrationFailedWithError:@"That username is already registered!"];
+                [self _registrationFailedWithError:@"That username is already registered!" statusCode:statusCode];
             else
-                [self _registrationFailedWithError:GenericErrorMessage];
+                [self _registrationFailedWithError:GenericErrorMessage statusCode:statusCode];
         }
     }
 }
