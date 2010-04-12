@@ -192,29 +192,27 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_loginUser:(CPString)username password:(CPString)password
 {
-    var loginObject = {'username' : username,
-                       'password' : password},
-        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
+    var loginObject = {'username' : username, 'password' : password};
+    var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
 
-        [request setHTTPMethod:@"POST"];
-        [request setHTTPBody:[CPString JSONFromObject:loginObject]];
-        _loginConnection = [_connectionClass connectionWithRequest:request
-                                                         delegate:self];
-        _loginConnection.username = username;
+    [request setHTTPMethod:@"POST"];
+    [request setHTTPBody:[CPString JSONFromObject:loginObject]];
+    _loginConnection = [_connnectionClass connectionWithRequest:request
+                                                       delegate:self];
+    _loginConnection.username = username;
 }
 
 /* @ignore */
 - (void)_registerUser:(CPString)username password:(CPString)password
 {
-    var registerObject = {'username' : username,
-                          'password' : password},
-        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
+    var registerObject = {'username' : username, 'password' : password};
+    var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
 
-        [request setHTTPMethod:@"POST"];
-        [request setHTTPBody:[CPString JSONFromObject:registerObject]];
-        _registrationConnection = [_connectionClass connectionWithRequest:request
-                                                                delegate:self];
-        _registrationConnection.username = username;
+    [request setHTTPMethod:@"POST"];
+    [request setHTTPBody:[CPString JSONFromObject:registerObject]];
+    _registrationConnection = [_connectionClass connectionWithRequest:request
+                                                             delegate:self];
+    _registrationConnection.username = username;
 }
 
 /* @ignore */
