@@ -1,5 +1,5 @@
 /*
- * SCLoginPanelController.j
+ * SCLoginDialogController.j
  * SCAuth
  *
  * Created by Saikat Chakrabarti on April 7, 2010.
@@ -11,7 +11,7 @@
 @import <AppKit/CPWindowController.j>
 @import "../AccountValidators/SCAccountValidator.j"
 
-var DefaultLoginPanelController = nil,
+var DefaultLoginDialogController = nil,
     DefaultLoginTitle = @"Login/Register",
     LoginTitle = @"Login",
     RegisterTitle = @"Register",
@@ -23,14 +23,14 @@ SCLoginSucceeded = 0;
 SCLoginFailed = 1;
 
 /*! 
-    @class SCLoginPanelController
+    @class SCLoginDialogController
 
-    This is the controller for the default login panel built-in to SCAuth.
+    This is the controller for the default login dialog built-in to SCAuth.
 */
 
-@implementation SCLoginPanelController : CPWindowController
+@implementation SCLoginDialogController : CPWindowController
 {
-    unsigned _panelReturnCode;
+    unsigned _dialogReturnCode;
     CPString _username @accessors(readonly, property=username);
     id _delegate @accessors(property=delegate);
     SEL _callback;
@@ -66,6 +66,9 @@ SCLoginFailed = 1;
     _connectionClass = CPURLConnection;
     [_window setAutorecalculatesKeyViewLoop:NO];
     [_window setDefaultButton:_loginButton];
+    if (_window._windowView && _window._windowView._closeButton)
+        [_window._windowView._closeButton setHidden:YES];
+
     [_userLabel sizeToFit];
     [_passwordLabel sizeToFit];
     [_registeringProgressLabel sizeToFit];
@@ -110,17 +113,17 @@ SCLoginFailed = 1;
 
     [[CPNotificationCenter defaultCenter]
         addObserver:self
-           selector:@selector(_loginPanelClosed:)
+           selector:@selector(_loginDialogClosed:)
                name:CPWindowWillCloseNotification
              object:_window];
 }
 
 /* @ignore */
-- (void)_loginPanelClosed:(CPNotification)aNotification
+- (void)_loginDialogClosed:(CPNotification)aNotification
 {
     [CPApp stopModalWithCode:CPRunStoppedResponse];  
     if (_delegate && [_delegate respondsToSelector:_callback])
-        [_delegate performSelector:_callback withObject:_panelReturnCode];
+        [_delegate performSelector:_callback withObject:_dialogReturnCode];
 }
 
 - (@action)forgotPasswordLinkClicked:(id)sender
@@ -138,7 +141,7 @@ SCLoginFailed = 1;
 
 - (@action)cancel:(id)sender
 {
-    _panelReturnCode = SCLoginFailed;
+    _dialogReturnCode = SCLoginFailed;
     [_window close];
 }
 
@@ -177,7 +180,7 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_loginFailedWithError:(CPString)errorMessageText statusCode:(int)statusCode
 {
-    [self _setPanelModeToLogin];
+    [self _setDialogModeToLogin];
     [self _setErrorMessageText:errorMessageText];
     [_window makeFirstResponder:_passwordField];
     [_passwordField selectText:self];
@@ -186,7 +189,7 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_registrationFailedWithError:(CPString)errorMessageText statusCode:(int)statusCode
 {
-    [self _setPanelModeToRegister];
+    [self _setDialogModeToRegister];
     [self _setErrorMessageText:errorMessageText];
 }
 
@@ -351,7 +354,7 @@ SCLoginFailed = 1;
 }
 
 /* @ignore */
-- (void)_setPanelModeToLogin
+- (void)_setDialogModeToLogin
 {
     [self _setDefaultHiddenSettings];
     [_loginButton setTitle:LoginTitle];
@@ -363,7 +366,7 @@ SCLoginFailed = 1;
 }
 
 /* @ignore */
-- (void)_setPanelModeToRegister
+- (void)_setDialogModeToRegister
 {
     [self _setDefaultHiddenSettings];
     [_loginButton setTitle:RegisterTitle];
@@ -374,7 +377,7 @@ SCLoginFailed = 1;
 }
 
 /* @ignore */
-- (void)_setPanelModeToLoginOrRegister
+- (void)_setDialogModeToLoginOrRegister
 {
     [self _setDefaultHiddenSettings];
     [_loginButton setTitle:DefaultLoginTitle];
@@ -395,12 +398,12 @@ SCLoginFailed = 1;
 }
 
 /*!
-    Creates a new login panel and run it modally.  The login panel can be used to either
+    Creates a new login dialog and run it modally.  The login dialog can be used to either
     log a user in or register a new user.  It expects the backend to respond to certain
     URLs correctly - see README.markdown.
     @param aDelegate - Should implement aCallback, which will get called with either 
            SCLoginSucceeded or SCLoginFailed when the dialog closes
-    @param aCallback - Gets called on panel close
+    @param aCallback - Gets called on dialog close
  */
 - (void)loginWithDelegate:(id)aDelegate callback:(SEL)aCallback
 {
@@ -408,15 +411,15 @@ SCLoginFailed = 1;
     _username = nil;
     _delegate = aDelegate;
     _callback = aCallback;
-    _panelReturnCode = SCLoginFailed;
-    [self _setPanelModeToLoginOrRegister];
+    _dialogReturnCode = SCLoginFailed;
+    [self _setDialogModeToLoginOrRegister];
     [_passwordField setStringValue:""];
     [_passwordConfirmField setStringValue:""];
     [_window makeFirstResponder:_userField];
 }
 
 /*!
-    Add a subheading to the login panel explaining why the login panel appeared.
+    Add a subheading to the login dialog explaining why the login dialog appeared.
  */
 - (void)setSubheadingText:(CPString)aSubheading
 {
@@ -436,21 +439,21 @@ SCLoginFailed = 1;
 }
 
 /*!
-    Creates a new login panel controller
+    Creates a new login dialog controller
  */
-+ (SCLoginPanelController)newLoginPanelController
++ (SCLoginDialogController)newLoginDialogController
 {
-    return [[self alloc] initWithWindowCibName:@"SCLoginPanel"];
+    return [[self alloc] initWithWindowCibName:@"SCLoginDialog"];
 }
 
 /*!
     Returns a default controller singleton
  */
-+ (SCLoginPanelController)defaultController
++ (SCLoginDialogController)defaultController
 {
-    if (!DefaultLoginPanelController) 
-        DefaultLoginPanelController = [self newLoginPanelController];
-    return DefaultLoginPanelController;
+    if (!DefaultLoginDialogController) 
+        DefaultLoginDialogController = [self newLoginDialogController];
+    return DefaultLoginDialogController;
 }
 
 - (void)controlTextDidBlur:(CPNotification)aNotification
@@ -469,7 +472,7 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_userCheckFailedWithStatusCode:(int)statusCode
 {
-    [self _setPanelModeToLoginOrRegister];
+    [self _setDialogModeToLoginOrRegister];
     [self _setErrorMessageText:UserCheckErrorMessage];
 }
 
@@ -511,9 +514,9 @@ SCLoginFailed = 1;
     {
     case _userCheckConnection:
         if (statusCode === 200) 
-            [self _setPanelModeToLogin];
+            [self _setDialogModeToLogin];
         else if (statusCode == 404) 
-            [self _setPanelModeToRegister];
+            [self _setDialogModeToRegister];
         else 
             [self _userCheckFailedWithStatusCode:statusCode];
         break;
@@ -521,7 +524,7 @@ SCLoginFailed = 1;
     case _loginConnection:
         if (statusCode === 200)  
         {
-            _panelReturnCode = SCLoginSucceeded;
+            _dialogReturnCode = SCLoginSucceeded;
             _username = _loginConnection.username;
             [_window close];
         }
@@ -537,7 +540,7 @@ SCLoginFailed = 1;
     case _registrationConnection:
         if (statusCode === 200) 
         {
-            _panelReturnCode = SCLoginSucceeded;
+            _dialogReturnCode = SCLoginSucceeded;
             _username = _registrationConnection.username;
             [_window close];
         }

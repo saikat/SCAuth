@@ -1,5 +1,5 @@
 /*
- * SCLoginPanelControllerTest.j
+ * SCLoginDialogControllerTest.j
  * SCAuth
  *
  * Created by Saikat Chakrabarti on April 7, 2010.
@@ -8,7 +8,7 @@
  * 
  */
 
-@import "../LoginProviders/SCLoginPanelController.j"
+@import "../LoginProviders/SCLoginDialogController.j"
 @import <OJMoq/OJMoq.j>
 @import <AppKit/AppKit.j>
 
@@ -17,21 +17,21 @@
 
 // Run these tests with objj -I/Path/to/frameworks/ `which ojtest` Test/*.j if you have custom test or Cappuccino frameworks
 
-// TODO I need this definition, or [CPPanel orderOut:] fails.  This shouldn't, ideally, be the case.
+// TODO I need this definition, or [CPDialog orderOut:] fails.  This shouldn't, ideally, be the case.
 function CPWindowObjectList()
 {
     return [];
 }
-@implementation SCLoginPanelControllerTest : OJTestCase
+@implementation SCLoginDialogControllerTest : OJTestCase
 { 
     OJMoq platformWindowMock;
-    SCLoginPanelControllerTest testController;
+    SCLoginDialogControllerTest testController;
 }
 
 - (void)setUp
 {
     [CPApplication sharedApplication];
-    testController = [SCLoginPanelController newLoginPanelController];
+    testController = [SCLoginDialogController newLoginDialogController];
     var windowBase = [testController window],
         platformWindowBase = [windowBase platformWindow];
 
@@ -112,12 +112,12 @@ function CPWindowObjectList()
 }
 
 /* Tests */
-- (void)testThatPanelGetsCreated
+- (void)testThatDialogGetsCreated
 {
     [self assertTrue:!!testController];
 }
 
-- (void)testInitialStateOfPanel
+- (void)testInitialStateOfDialog
 {
     [self startDialogWithStub];
     [self assert:[[testController passwordField] stringValue] equals:""];
@@ -127,7 +127,7 @@ function CPWindowObjectList()
     [self checkThatDialogIsInLoginOrRegisterMode];
 }
 
-- (void)testInitialStateOfPanelWhenForgotPasswordInformationExists
+- (void)testInitialStateOfDialogWhenForgotPasswordInformationExists
 {
     var mainBundle = [CPBundle mainBundle];
     mainBundle._bundle.valueForInfoDictionaryKey = function(aKey) 
@@ -144,7 +144,7 @@ function CPWindowObjectList()
     [self assertFalse:[[testController forgotPasswordLink] isHidden]];
 }
 
-- (void)testClosingPanel
+- (void)testClosingDialog
 {
     var delegateMock = moq();
     [delegateMock selector:@selector(didFinishSelector:) times:1 arguments:[SCLoginFailed]];
@@ -195,7 +195,7 @@ function CPWindowObjectList()
 - (void)testThatClickingRegisterInRegisterModeAsksBackendToRegister
 {
     [self startDialogWithStub];
-    [testController _setPanelModeToRegister];
+    [testController _setDialogModeToRegister];
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@"test"];
@@ -207,7 +207,7 @@ function CPWindowObjectList()
 - (void)testThatClickingLogininLoginModeAsksBackendToLogin
 {
     [self startDialogWithStub];
-    [testController _setPanelModeToLogin];
+    [testController _setDialogModeToLogin];
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@""];
@@ -219,7 +219,7 @@ function CPWindowObjectList()
 - (void)testClickingLoginInLoginOrRegisterModeAsksBackendToLogin
 {
     [self startDialogWithStub];
-    [testController _setPanelModeToLoginOrRegister];
+    [testController _setDialogModeToLoginOrRegister];
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@""];
@@ -231,7 +231,7 @@ function CPWindowObjectList()
 - (void)testClickingRegisterWithMismatchedPasswords
 {
     [self startDialogWithStub];
-    [testController _setPanelModeToRegister];
+    [testController _setDialogModeToRegister];
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@"test1"];
@@ -270,13 +270,13 @@ function CPWindowObjectList()
 - (void)testThatRegisterUserSendsCorrectInformationToBackend
 {}
 
-- (void)testSettingPanelToLoginMode
+- (void)testSettingDialogToLoginMode
 {}
 
-- (void)testSettingPanelToRegisterMode
+- (void)testSettingDialogToRegisterMode
 {}
 
-- (void)testSettingPanelToLoginOrRegisterMode
+- (void)testSettingDialogToLoginOrRegisterMode
 {}
 
 - (void)testThatCheckUserSendsCorrectInformationToBackend
@@ -300,10 +300,10 @@ function CPWindowObjectList()
 - (void)testThatSwitchingFromUsernameToPasswordFieldChecksUsername
 {}
 
-- (void)testThatEscapeClosesPanel
+- (void)testThatEscapeClosesDialog
 {}
 
-- (void)testEnteringUsernameAndClickingCancelAndReopeningPanel
+- (void)testEnteringUsernameAndClickingCancelAndReopeningDialog
 {}
 
 - (void)testFailedConnectionWhenAttemptingToLogin

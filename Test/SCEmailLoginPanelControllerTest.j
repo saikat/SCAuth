@@ -1,5 +1,5 @@
 /*
- * SCEmailLoginPanelControllerTest.j
+ * SCEmailLoginDialogControllerTest.j
  * SCAuth
  *
  * Created by Saikat Chakrabarti on April 7, 2010.
@@ -8,17 +8,17 @@
  * 
  */
 
-@import "../LoginProviders/SCEmailLoginPanelController.j"
+@import "../LoginProviders/SCEmailLoginDialogController.j"
 @import <AppKit/AppKit.j>
 
-@implementation SCEmailLoginPanelControllerTest : OJTestCase
+@implementation SCEmailLoginDialogControllerTest : OJTestCase
 { 
-    SCEmailLoginPanelController testPanelController;
+    SCEmailLoginDialogController testDialogController;
 }
 - (void)setUp
 {
     [CPApplication sharedApplication];
-    testPanelController = [SCEmailLoginPanelController newLoginPanelController];
+    testDialogController = [SCEmailLoginDialogController newLoginDialogController];
 }
 
 - (void)tearDown
@@ -26,15 +26,15 @@
     CPApp = nil;
 }
 
-- (void)testThatPanelGetsCreated
+- (void)testThatDialogGetsCreated
 {
-    [self assertTrue:!!testPanelController];
+    [self assertTrue:!!testDialogController];
 }
 
 - (void)testThatUserLabelIsChangedToEmail
 {
     // Load the window
-    [testPanelController window];
-    [self assertTrue:([testPanelController._userLabel stringValue] === "Email:")];
+    [testDialogController window];
+    [self assertTrue:([testDialogController._userLabel stringValue] === "Email:")];
 }
 @end

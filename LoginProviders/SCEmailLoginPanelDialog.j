@@ -1,5 +1,5 @@
 /*
- * SCEmailLoginPanelController.j
+ * SCEmailLoginDialogController.j
  * SCAuth
  *
  * Created by Saikat Chakrabarti on April 7, 2010.
@@ -10,10 +10,10 @@
 
 @import <AppKit/CPWindowController.j>
 @import "../AccountValidators/SCEmailAccountValidator.j"
-@import "SCLoginPanelController.j"
+@import "SCLoginDialogController.j"
 
-var DefaultLoginPanelController = nil;
-@implementation SCEmailLoginPanelController : SCLoginPanelController{ }
+var DefaultLoginDialogController = nil;
+@implementation SCEmailLoginDialogController : SCLoginDialogController{ }
 
 - (void)awakeFromCib
 {
@@ -27,10 +27,10 @@ var DefaultLoginPanelController = nil;
                                                   [_userLabel frame].origin.y + 2.0)];
 }
 
-+ (SCLoginPanelController)defaultController
++ (SCLoginDialogController)defaultController
 {
-    if (!DefaultLoginPanelController) 
-        DefaultLoginPanelController = [self newLoginPanelController];
-    return DefaultLoginPanelController;
+    if (!DefaultLoginDialogController) 
+        DefaultLoginDialogController = [self newLoginDialogController];
+    return DefaultLoginDialogController;
 }
 @end

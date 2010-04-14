@@ -11,7 +11,7 @@
 @import <Foundation/CPObject.j>
 @import <Foundation/CPURLConnection.j>
 @import <Foundation/CPUserSessionManager.j>
-@import "LoginProviders/SCLoginPanelController.j"
+@import "LoginProviders/SCLoginDialogController.j"
 
 var SCDefaultSessionManager = nil;
 
@@ -38,7 +38,7 @@ var SCDefaultSessionManager = nil;
     if (self) {
         _loginDelegate = nil;
         _userIdentifier = nil;
-        [self setLoginProvider:[SCLoginPanelController defaultController]];
+        [self setLoginProvider:[SCLoginDialogController defaultController]];
     }
     return self;
 }
