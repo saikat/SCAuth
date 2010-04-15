@@ -355,9 +355,9 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_setDialogModeToLogin
 {
-    var currentErrorMessage = [_errorMessage stringValue];
+    var currentErrorMessage = ([_errorMessage isHidden] ? nil : [_errorMessage stringValue]);
     [self _setDefaultHiddenSettings];
-    if ([_loginButton title] === LoginTitle)
+    if ([_loginButton title] === LoginTitle && currentErrorMessage)
         [self _setErrorMessageText:currentErrorMessage];
 
     [_loginButton setTitle:LoginTitle];
@@ -371,9 +371,9 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_setDialogModeToRegister
 {
-    var currentErrorMessage = [_errorMessage stringValue];
+    var currentErrorMessage = ([_errorMessage isHidden] ? nil : [_errorMessage stringValue]);
     [self _setDefaultHiddenSettings];
-    if ([_loginButton title] === RegisterTitle)
+    if ([_loginButton title] === RegisterTitle && currentErrorMessage)
         [self _setErrorMessageText:currentErrorMessage];
 
     [self setSubheadingText:"Welcome! Looks like you're a new user.  Just choose a password to register."];
