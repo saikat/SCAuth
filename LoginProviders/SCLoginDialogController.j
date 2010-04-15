@@ -494,6 +494,20 @@ SCLoginFailed = 1;
         [self _userCheckFailedWithStatusCode:ConnectionStatusCode];
 }
 
+- (void)_registrationSucceededWithUsername:(CPString)username
+{
+    _dialogReturnCode = SCLoginSucceeded;
+    _username = username;
+    [_window close];
+}
+
+- (void)_loginSucceededWithUsername:(CPString)username
+{
+    _dialogReturnCode = SCLoginSucceeded;
+    _username = username;
+    [_window close];
+}
+
 - (void)connection:(CPURLConnection)aConnection didReceiveResponse:(CPURLResponse)aResponse
 {
     [aConnection cancel];
@@ -531,11 +545,7 @@ SCLoginFailed = 1;
 
     case _loginConnection:
         if (statusCode === 200)  
-        {
-            _dialogReturnCode = SCLoginSucceeded;
-            _username = _loginConnection.username;
-            [_window close];
-        }
+            [self _loginSucceededWithUsername:_loginConnection.username];
         else 
         {
             if (statusCode === 403) 
@@ -547,11 +557,7 @@ SCLoginFailed = 1;
 
     case _registrationConnection:
         if (statusCode === 200) 
-        {
-            _dialogReturnCode = SCLoginSucceeded;
-            _username = _registrationConnection.username;
-            [_window close];
-        }
+            [self _registrationSucceededWithUsername:_registrationConnection.username];
         else 
         {
             if (statusCode === 409) 
