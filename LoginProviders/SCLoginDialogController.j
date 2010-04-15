@@ -283,7 +283,6 @@ SCLoginFailed = 1;
 - (void)_checkUser
 {
     [_userCheckSpinner setHidden:NO];
-    [self _setErrorMessageText:nil];
 
     var request = [CPURLRequest requestWithURL:([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckURL"] || @"/user/") + [_userField stringValue]];
   
@@ -356,7 +355,11 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_setDialogModeToLogin
 {
+    var currentErrorMessage = [_errorMessage stringValue];
     [self _setDefaultHiddenSettings];
+    if ([_loginButton title] === LoginTitle)
+        [self _setErrorMessageText:currentErrorMessage];
+
     [_loginButton setTitle:LoginTitle];
     [_passwordConfirmLabel setHidden:YES];
     [_passwordConfirmField setHidden:YES];
@@ -368,7 +371,12 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_setDialogModeToRegister
 {
+    var currentErrorMessage = [_errorMessage stringValue];
     [self _setDefaultHiddenSettings];
+    if ([_loginButton title] === RegisterTitle)
+        [self _setErrorMessageText:currentErrorMessage];
+
+    [self setSubheadingText:"Welcome! Looks like you're a new user.  Just choose a password to register."];
     [_loginButton setTitle:RegisterTitle];
     [_passwordConfirmLabel setHidden:NO];
     [_passwordConfirmField setHidden:NO];
