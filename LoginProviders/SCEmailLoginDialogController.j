@@ -27,6 +27,13 @@ var DefaultLoginDialogController = nil;
                                                   [_userLabel frame].origin.y + 2.0)];
 }
 
+- (void)_setErrorMessageText:(CPString)anErrorMessage
+{
+    anErrorMessage = [anErrorMessage stringByReplacingOccurrencesOfString:@"username" withString:@"e-mail address"];
+    anErrorMessage = [anErrorMessage stringByReplacingOccurrencesOfString:@"Username" withString:@"E-mail address"];
+    [super _setErrorMessageText:anErrorMessage];
+}
+
 + (SCLoginDialogController)defaultController
 {
     if (!DefaultLoginDialogController) 

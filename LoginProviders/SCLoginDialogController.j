@@ -15,8 +15,8 @@ var DefaultLoginDialogController = nil,
     DefaultLoginTitle = @"Login/Register",
     LoginTitle = @"Login",
     RegisterTitle = @"Register",
-    UserCheckErrorMessage = @"Error finding user - are you online?",
-    GenericErrorMessage = @"Something went wrong. Try again in a few seconds.",
+    UserCheckErrorMessage = @"There was an error trying to find your username. Check your internet connection.",
+    GenericErrorMessage = @"Something went wrong. Check your internet connection and try again.",
     ConnectionStatusCode = -1;
 
 SCLoginSucceeded = 0;
@@ -85,9 +85,17 @@ SCLoginFailed = 1;
     [_subheading addSubview:border];
     [_subheading setValue:CGInsetMake(9.0, 9.0, 9.0, 9.0) forThemeAttribute:@"content-inset"];
 
-    [_tryAgainButton setFont:[CPFont fontWithName:[[_tryAgainButton font] familyName] size:10.0]];
+    [_errorMessage setLineBreakMode:CPLineBreakByWordWrapping];
+    [_errorMessage setBackgroundColor:[CPColor colorWithHexString:"993333"]];
+    [_errorMessage setTextColor:[CPColor whiteColor]];
+    var border = [[CPView alloc] initWithFrame:CPRectMake(0,CPRectGetHeight([_errorMessage bounds])-1,CPRectGetWidth([_errorMessage bounds]),1)];
+    [border setAutoresizingMask: CPViewWidthSizable | CPViewMinYMargin];
+    [border setBackgroundColor:[CPColor grayColor]];
+    [_errorMessage addSubview:border];
+    [_errorMessage setValue:CGInsetMake(9.0, 9.0, 9.0, 9.0) forThemeAttribute:@"content-inset"];
+
     [_tryAgainButton setTheme:nil];
-    [_tryAgainButton setTextColor:[CPColor colorWithCalibratedRed:103.0 / 255.0 green:154.0 / 255.0 blue:205.0 / 255.0 alpha:1.0]];
+    [_tryAgainButton setTextColor:[CPColor colorWithCalibratedRed:159.0 / 255.0 green:201.0 / 255.0 blue:245.0 / 255.0 alpha:1.0]];
     [_tryAgainButton sizeToFit];
     if (_tryAgainButton._DOMElement)
         _tryAgainButton._DOMElement.className = "hover";
@@ -104,11 +112,6 @@ SCLoginFailed = 1;
 
     [_passwordField setSecure:YES];
     [_passwordConfirmField setSecure:YES];
-
-    [_errorMessage setFont:[CPFont fontWithName:[[_errorMessage font] familyName] size:10.0]];
-    [_errorMessage setLineBreakMode:CPLineBreakByWordWrapping];
-    [_errorMessage setAlignment:CPRightTextAlignment];
-    [_errorMessage setTextColor:[CPColor colorWithHexString:"993333"]];
     [_window setShowsResizeIndicator:NO];
 
     [[CPNotificationCenter defaultCenter]
@@ -247,10 +250,15 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_sizeAndPositionFormFieldContainer
 {
-    if ([_subheading isHidden])
+    if ([_subheading isHidden] && [_errorMessage isHidden])
         [_formFieldContainer setFrameOrigin:CGPointMake(16, 0)];
     else
-        [_formFieldContainer setFrameOrigin:CGPointMake(16, [_subheading frame].origin.y + [_subheading frame].size.height + 5.0)];
+    {
+        if (![_subheading isHidden])
+            [_formFieldContainer setFrameOrigin:CGPointMake(16, [_subheading frame].origin.y + [_subheading frame].size.height + 5.0)];
+        else if (![_errorMessage isHidden])
+            [_formFieldContainer setFrameOrigin:CGPointMake(16, [_errorMessage frame].origin.y + [_errorMessage frame].size.height + 5.0)];
+    }
     [_formFieldContainer setFrameSize:CGSizeMake([_loginButton frame].origin.x + [_loginButton frame].size.width + 16.0,
                                                  [_loginButton frame].origin.y + [_loginButton frame].size.height + 10.0)];
 }
@@ -291,37 +299,40 @@ SCLoginFailed = 1;
                                                          delegate:self];
 }
 
+- (void)_setMessage:(CPString)aMessage inTextBox:(CPTextField)textBox
+{
+   if (!aMessage) 
+        [textBox setHidden:YES];
+    else 
+    {
+        [textBox setStringValue:aMessage];
+        [textBox setHidden:NO];
+        var fieldFrame = [_formFieldContainer frame],
+            size = [aMessage sizeWithFont:[textBox font]
+                                     inWidth:fieldFrame.size.width + 16.0];
+        [textBox setFrame:CGRectMake(0, 0, size.width, size.height + 18.0)];
+    }
+    [self _sizeAndPositionFormFieldContainer];
+    [self _sizeWindowToFit];
+}
+
+/*!
+    Add a subheading to the login dialog explaining why the login dialog appeared.
+ */
+- (void)setSubheadingText:(CPString)aSubheading
+{
+    [self _setMessage:aSubheading inTextBox:_subheading];
+    if (![_errorMessage isHidden])
+        [_errorMessage setHidden:YES];
+} 
+
 /* @ignore */
 - (void)_setErrorMessageText:(CPString)anErrorMessage
 {
-    if (!anErrorMessage) 
-    {
-        [_errorMessage setHidden:YES];
-        [_tryAgainButton setHidden:YES];
-    }
-    else 
-    {
-        [_errorMessage setHidden:NO];
-        [_errorMessage setStringValue:anErrorMessage];
-        var frameToUse = [_passwordConfirmField frame];
-        if ([_passwordConfirmField isHidden]) 
-            frameToUse = [_passwordField frame];
-        var yOrigin = frameToUse.origin.y + frameToUse.size.height,
-            height = [anErrorMessage sizeWithFont:[_errorMessage font] inWidth:108].height + 5.0;
-        [_errorMessage setFrame:CGRectMake(frameToUse.origin.x - 5.0 - 108,
-                                           yOrigin,
-                                           108, 
-                                           height)];
-
-        if (anErrorMessage === UserCheckErrorMessage) 
-        {
-            [_tryAgainButton setHidden:NO];
-            [_tryAgainButton setFrameOrigin:CGPointMake([_errorMessage frame].origin.x + [_errorMessage frame].size.width - [_tryAgainButton frame].size.width - 2.0,
-                                                        [_errorMessage frame].origin.y + [_errorMessage frame].size.height - 2.0)];
-        }
-        else
-            [_tryAgainButton setHidden:YES];
-    }
+    [_tryAgainButton setHidden:YES];
+    [self _setMessage:anErrorMessage inTextBox:_errorMessage];
+    if (![_subheading isHidden])
+        [_subheading setHidden:YES];
 }
 
 /* @ignore */
@@ -359,7 +370,6 @@ SCLoginFailed = 1;
     [self _setDefaultHiddenSettings];
     if ([_loginButton title] === LoginTitle && currentErrorMessage)
         [self _setErrorMessageText:currentErrorMessage];
-
     [_loginButton setTitle:LoginTitle];
     [_passwordConfirmLabel setHidden:YES];
     [_passwordConfirmField setHidden:YES];
@@ -373,10 +383,9 @@ SCLoginFailed = 1;
 {
     var currentErrorMessage = ([_errorMessage isHidden] ? nil : [_errorMessage stringValue]);
     [self _setDefaultHiddenSettings];
+    [self setSubheadingText:"Welcome! Looks like you're a new user.  Just choose a password to register."];
     if ([_loginButton title] === RegisterTitle && currentErrorMessage)
         [self _setErrorMessageText:currentErrorMessage];
-
-    [self setSubheadingText:"Welcome! Looks like you're a new user.  Just choose a password to register."];
     [_loginButton setTitle:RegisterTitle];
     [_passwordConfirmLabel setHidden:NO];
     [_passwordConfirmField setHidden:NO];
@@ -427,26 +436,6 @@ SCLoginFailed = 1;
 }
 
 /*!
-    Add a subheading to the login dialog explaining why the login dialog appeared.
- */
-- (void)setSubheadingText:(CPString)aSubheading
-{
-    if (!aSubheading) 
-        [_subheading setHidden:YES];
-    else 
-    {
-        [_subheading setStringValue:aSubheading];
-        [_subheading setHidden:NO];
-        var fieldFrame = [_formFieldContainer frame],
-            size = [aSubheading sizeWithFont:[_subheading font]
-                                     inWidth:fieldFrame.size.width + 16.0];
-        [_subheading setFrame:CGRectMake(0, 0, size.width, size.height + 18.0)];
-    }
-    [self _sizeAndPositionFormFieldContainer];
-    [self _sizeWindowToFit];
-}
-
-/*!
     Creates a new login dialog controller
  */
 + (SCLoginDialogController)newLoginDialogController
@@ -482,6 +471,13 @@ SCLoginFailed = 1;
 {
     [self _setDialogModeToLoginOrRegister];
     [self _setErrorMessageText:UserCheckErrorMessage];
+    [_tryAgainButton setHidden:NO];
+    [_tryAgainButton setFrameOrigin:CGPointMake([_errorMessage frame].origin.x + 9.0,
+                                                [_errorMessage frame].origin.y + [_errorMessage frame].size.height - 8.0)];
+    [_errorMessage setFrameSize:CGSizeMake([_errorMessage frame].size.width,
+                                           [_tryAgainButton frame].origin.y + [_tryAgainButton frame].size.height + 9.0)];
+    [self _sizeAndPositionFormFieldContainer];
+    [self _sizeWindowToFit];
 }
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException
@@ -549,7 +545,7 @@ SCLoginFailed = 1;
         else 
         {
             if (statusCode === 403) 
-                [self _loginFailedWithError:@"Invalid username and/or password." statusCode:statusCode];
+                [self _loginFailedWithError:@"Incorrect username or password." statusCode:statusCode];
             else
                 [self _loginFailedWithError:GenericErrorMessage statusCode:statusCode];
         }
