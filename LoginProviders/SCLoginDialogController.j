@@ -307,7 +307,10 @@ SCLoginFailed = 1;
 - (void)_setMessage:(CPString)aMessage inTextBox:(CPTextField)textBox
 {
    if (!aMessage) 
+   {
+        [textBox setStringValue:""];
         [textBox setHidden:YES];
+   }
     else 
     {
         [textBox setStringValue:aMessage];
@@ -327,7 +330,7 @@ SCLoginFailed = 1;
 - (void)setSubheadingText:(CPString)aSubheading
 {
     [self _setMessage:aSubheading inTextBox:_subheading];
-    if (![_errorMessage isHidden])
+    if (![_errorMessage isHidden] && ![_subheading isHidden])
         [_errorMessage setHidden:YES];
 } 
 
@@ -336,7 +339,7 @@ SCLoginFailed = 1;
 {
     [_tryAgainButton setHidden:YES];
     [self _setMessage:anErrorMessage inTextBox:_errorMessage];
-    if (![_subheading isHidden])
+    if (![_errorMessage isHidden] && ![_subheading isHidden])
         [_subheading setHidden:YES];
 }
 
