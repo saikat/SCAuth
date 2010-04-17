@@ -97,10 +97,15 @@ SCLoginFailed = 1;
     [_tryAgainButton setTheme:nil];
     [_tryAgainButton setTextColor:[CPColor colorWithCalibratedRed:159.0 / 255.0 green:201.0 / 255.0 blue:245.0 / 255.0 alpha:1.0]];
     [_tryAgainButton sizeToFit];
-    if (_tryAgainButton._DOMElement)
-        _tryAgainButton._DOMElement.className = "hover";
-
     [_forgotPasswordLink setFont:[CPFont fontWithName:[[_forgotPasswordLink font] familyName] size:10.0]];
+    // I have to set the text color like this - otherwise the underline stays black
+    if (_tryAgainButton._DOMElement)
+    {
+        _tryAgainButton._DOMElement.className = "hover";
+        _tryAgainButton._DOMElement.style.color = [[CPColor colorWithCalibratedRed:159.0 / 255.0 green:201.0 / 255.0 blue:245.0 / 255.0 alpha:1.0] cssString];
+        _tryAgainButton._DOMElement.style.textDecoration = "underline";
+    }
+
     [_forgotPasswordLink setTheme:nil];
     [_forgotPasswordLink setTextColor:[CPColor colorWithCalibratedRed:103.0 / 255.0 green:154.0 / 255.0 blue:205.0 / 255.0 alpha:1.0]];
     [_forgotPasswordLink sizeToFit];
