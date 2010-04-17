@@ -158,7 +158,6 @@ SCLoginFailed = 1;
 
 - (@action)login:(id)sender
 {
-    [self _setErrorMessageText:nil];
     if ([_loginButton title] === RegisterTitle) 
     {
         var passwordError = [_accountValidator validatePassword:[_passwordField stringValue]
