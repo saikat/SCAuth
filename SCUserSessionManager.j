@@ -148,10 +148,24 @@ var SCDefaultSessionManager = nil;
     }
 }
 
+- (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException
+{
+    var delegate = aConnection.delegate;
+    if (aConnection === _sessionSyncConnection) 
+    {
+        if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidFail:)])
+            [delegate sessionSyncDidFail:self];
+    }
+    else if (aConnection === _logoutConnection) 
+        if (delegate && [delegate respondsToSelector:@selector(logoutDidFail:)])
+            [delegate logoutDidFail:self];
+}
+
 - (void)connection:(CPURLConnection)aConnection didReceiveResponse:(CPURLResponse)aResponse
 {
     var delegate = aConnection.delegate;
     if (![aResponse isKindOfClass:[CPHTTPURLResponse class]]) {
+        [aConnection cancel];
         if (aConnection === _sessionSyncConnection) 
         {
             if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidFail:)])
@@ -164,6 +178,9 @@ var SCDefaultSessionManager = nil;
     }
 
     var statusCode = [aResponse statusCode];
+
+    if (aConnection !== _sessionSyncConnection || statusCode !== 200)
+        [aConnection cancel];
 
     if (aConnection === _sessionSyncConnection) 
     {
@@ -191,11 +208,14 @@ var SCDefaultSessionManager = nil;
 
 - (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data
 {
+    if (!data)
+        return;
     var responseBody = [data objectFromJSON];
 
     if (aConnection === _sessionSyncConnection) {
         var delegate = aConnection.delegate;
-        [self _setCurrentUser:responseBody.username];
+        if (responseBody.username)
+            [self _setCurrentUser:responseBody.username];
         if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidSucceed:)])
             [delegate sessionSyncDidSucceed:self];
     }
