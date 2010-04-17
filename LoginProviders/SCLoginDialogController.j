@@ -555,7 +555,12 @@ SCLoginFailed = 1;
         else 
         {
             if (statusCode === 403) 
-                [self _loginFailedWithError:@"Incorrect username or password." statusCode:statusCode];
+            {
+                // Between clicking login and the response, the dialog switched to register mode
+                // so we no longer care about this login error
+                if ([_loginButton title] !== RegisterTitle)
+                    [self _loginFailedWithError:@"Incorrect username or password." statusCode:statusCode];
+            }
             else
                 [self _loginFailedWithError:GenericErrorMessage statusCode:statusCode];
         }
@@ -567,7 +572,7 @@ SCLoginFailed = 1;
         else 
         {
             if (statusCode === 409) 
-                [self _registrationFailedWithError:@"That username is already registered!" statusCode:statusCode];
+                [self _setDialogModeToLogin];
             else
                 [self _registrationFailedWithError:GenericErrorMessage statusCode:statusCode];
         }
