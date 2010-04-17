@@ -168,7 +168,7 @@ SCLoginFailed = 1;
         {
             var userIsValid = [_accountValidator validateUsername:[_userField stringValue]];
             if (!userIsValid) 
-                [self _setErrorMessageText:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckErrorMessage"] || @"Please enter a valid username."];
+                [self _setErrorMessageText:@"Please enter a valid username."];
             else 
             {
                 [self _registerUser:[_userField stringValue] password:[_passwordField stringValue]];
