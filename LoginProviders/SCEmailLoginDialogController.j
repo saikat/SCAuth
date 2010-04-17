@@ -19,7 +19,7 @@ var DefaultLoginDialogController = nil;
 {
     [super awakeFromCib];
     _accountValidator = SCEmailAccountValidator;
-    [_userLabel setStringValue:"Email:"];
+    [_userLabel setStringValue:"E-mail:"];
     [_userLabel sizeToFit];
     [_userLabel setFrameOrigin:CGPointMake([_userField frame].origin.x - 4.0 - [_userLabel frame].size.width,
                                            [_userField frame].origin.y + 4.0)];
