@@ -96,8 +96,8 @@ SCLoginFailed = 1;
 
     [_tryAgainButton setTheme:nil];
     [_tryAgainButton setTextColor:[CPColor colorWithCalibratedRed:159.0 / 255.0 green:201.0 / 255.0 blue:245.0 / 255.0 alpha:1.0]];
-    [_tryAgainButton sizeToFit];
-    [_forgotPasswordLink setFont:[CPFont fontWithName:[[_forgotPasswordLink font] familyName] size:10.0]];
+    [_tryAgainButton setAlignment:CPLeftTextAlignment];
+    [_tryAgainButton setStringValue:"Tryagain."];
     // I have to set the text color like this - otherwise the underline stays black
     if (_tryAgainButton._DOMElement)
     {
@@ -105,7 +105,10 @@ SCLoginFailed = 1;
         _tryAgainButton._DOMElement.style.color = [[CPColor colorWithCalibratedRed:159.0 / 255.0 green:201.0 / 255.0 blue:245.0 / 255.0 alpha:1.0] cssString];
         _tryAgainButton._DOMElement.style.textDecoration = "underline";
     }
-
+    [_tryAgainButton sizeToFit];
+    // Without this, the button screws up in FF and wraps. 
+    [_tryAgainButton setFrameSize:CGSizeMake([_tryAgainButton frame].size.width + 5.0, [_tryAgainButton frame].size.height)];
+    [_forgotPasswordLink setFont:[CPFont fontWithName:[[_forgotPasswordLink font] familyName] size:10.0]];
     [_forgotPasswordLink setTheme:nil];
     [_forgotPasswordLink setTextColor:[CPColor colorWithCalibratedRed:103.0 / 255.0 green:154.0 / 255.0 blue:205.0 / 255.0 alpha:1.0]];
     [_forgotPasswordLink sizeToFit];
@@ -542,7 +545,8 @@ SCLoginFailed = 1;
     {
     case _userCheckConnection:
         if (statusCode === 200) 
-            [self _setDialogModeToLogin];
+            [self _userCheckFailedWithStatusCode:statusCode];
+        //            [self _setDialogModeToLogin];
         else if (statusCode == 404) 
             [self _setDialogModeToRegister];
         else 
