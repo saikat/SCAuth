@@ -320,8 +320,6 @@ SCLoginFailed = 1;
                                      inWidth:fieldFrame.size.width + 16.0];
         [textBox setFrame:CGRectMake(0, 0, size.width, size.height + 18.0)];
     }
-    [self _sizeAndPositionFormFieldContainer];
-    [self _sizeWindowToFit];
 }
 
 /*!
@@ -332,6 +330,8 @@ SCLoginFailed = 1;
     [self _setMessage:aSubheading inTextBox:_subheading];
     if (![_errorMessage isHidden] && ![_subheading isHidden])
         [_errorMessage setHidden:YES];
+    [self _sizeAndPositionFormFieldContainer];
+    [self _sizeWindowToFit];
 } 
 
 /* @ignore */
@@ -341,6 +341,8 @@ SCLoginFailed = 1;
     [self _setMessage:anErrorMessage inTextBox:_errorMessage];
     if (![_errorMessage isHidden] && ![_subheading isHidden])
         [_subheading setHidden:YES];
+    [self _sizeAndPositionFormFieldContainer];
+    [self _sizeWindowToFit];
 }
 
 /* @ignore */
