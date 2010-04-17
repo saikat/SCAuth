@@ -545,8 +545,7 @@ SCLoginFailed = 1;
     {
     case _userCheckConnection:
         if (statusCode === 200) 
-            [self _userCheckFailedWithStatusCode:statusCode];
-        //            [self _setDialogModeToLogin];
+            [self _setDialogModeToLogin];
         else if (statusCode == 404) 
             [self _setDialogModeToRegister];
         else 
