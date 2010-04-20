@@ -180,7 +180,6 @@ function CPWindowObjectList()
     [self checkThatURLIsHit:@"/user/test@test.com" withMethod:@"GET" withBody:@"" whenControlIsClicked:[testController tryAgainButton]];
 
     [self assertFalse:[[testController userCheckSpinner] isHidden]];
-    [self assertTrue:[[testController errorMessage] isHidden]];
 }
 
 - (void)testClickingCancel

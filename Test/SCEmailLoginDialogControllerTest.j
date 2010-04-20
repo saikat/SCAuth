@@ -35,6 +35,6 @@
 {
     // Load the window
     [testDialogController window];
-    [self assertTrue:([testDialogController._userLabel stringValue] === "Email:")];
+    [self assertTrue:([testDialogController._userLabel stringValue] === "E-mail:")];
 }
 @end
