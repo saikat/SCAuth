@@ -13,7 +13,7 @@
 @import <AppKit/AppKit.j>
 
 // Uncomment the following line to turn on backtraces
-// objj_msgSend_decorate(objj_backtrace_decorator);
+objj_msgSend_decorate(objj_backtrace_decorator);
 
 // Run these tests with objj -I/Path/to/frameworks/ `which ojtest` Test/*.j if you have custom test or Cappuccino frameworks
 
@@ -95,6 +95,7 @@ function CPWindowObjectList()
         madeRequest = nil;
 
     [mockConnectionClass selector:@selector(connectionWithRequest:delegate:) callback:(function(args) {madeRequest = args[0];})];
+    [mockConnectionClass selector:@selector(connectionWithRequest:delegate:) returns:{}];
     [mockConnectionClass selector:@selector(connectionWithRequest:delegate:) times:1];
 
     [testController setConnectionClass:mockConnectionClass];
@@ -112,6 +113,7 @@ function CPWindowObjectList()
 }
 
 /* Tests */
+
 - (void)testThatDialogGetsCreated
 {
     [self assertTrue:!!testController];
