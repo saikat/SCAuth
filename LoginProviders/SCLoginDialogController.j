@@ -57,6 +57,7 @@ SCLoginFailed = 1;
     @outlet CPImageView _progressSpinner @accessors(property=progressSpinner);
     @outlet CPImageView _userCheckSpinner @accessors(property=userCheckSpinner);
     @outlet CPButton _forgotPasswordLink @accessors(property=forgotPasswordLink);
+    @outlet CPCheckBox _rememberMeButton @accessors(property=rememberMeButton);
     @outlet CPView _formFieldContainer @accessors(property=formFieldContainer);
 }
 
@@ -108,13 +109,15 @@ SCLoginFailed = 1;
     [_tryAgainButton sizeToFit];
     // Without this, the button screws up in FF and wraps. 
     [_tryAgainButton setFrameSize:CGSizeMake([_tryAgainButton frame].size.width + 5.0, [_tryAgainButton frame].size.height)];
+
     [_forgotPasswordLink setFont:[CPFont fontWithName:[[_forgotPasswordLink font] familyName] size:10.0]];
     [_forgotPasswordLink setTheme:nil];
     [_forgotPasswordLink setTextColor:[CPColor colorWithCalibratedRed:103.0 / 255.0 green:154.0 / 255.0 blue:205.0 / 255.0 alpha:1.0]];
     [_forgotPasswordLink sizeToFit];
-    [_forgotPasswordLink sizeToFit];
     [_forgotPasswordLink setFrameOrigin:CGPointMake([_passwordField frame].origin.x + [_passwordField frame].size.width - [_forgotPasswordLink frame].size.width,
                                                     [_passwordField frame].origin.y + [_passwordField frame].size.height)];
+
+    [_rememberMeButton setFont:[CPFont fontWithName:[[_forgotPasswordLink font] familyName] size:[[_passwordLabel font] size]]];
     if (_forgotPasswordLink._DOMElement)
         _forgotPasswordLink._DOMElement.className = "hover";
 
@@ -206,7 +209,8 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_loginUser:(CPString)username password:(CPString)password
 {
-    var loginObject = {'username' : username, 'password' : password};
+    var shouldRemember = ([_rememberMeButton state] === CPOnState);
+    var loginObject = {'username' : username, 'password' : password, 'remember' : shouldRemember};
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
 
     [request setHTTPMethod:@"POST"];
@@ -219,7 +223,8 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_registerUser:(CPString)username password:(CPString)password
 {
-    var registerObject = {'username' : username, 'password' : password};
+    var shouldRemember = ([_rememberMeButton state] === CPOnState);
+    var registerObject = {'username' : username, 'password' : password, 'remember' : shouldRemember};
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
 
     [request setHTTPMethod:@"POST"];
@@ -245,6 +250,8 @@ SCLoginFailed = 1;
     var loginFrame = [_loginButton frame];
     [_cancelButton setFrameOrigin:CGPointMake(loginFrame.origin.x - [_cancelButton frame].size.width - 8.0,
                                               loginFrame.origin.y)];
+    [_rememberMeButton setFrameOrigin:CGPointMake(0,
+                                                  loginFrame.origin.y + loginFrame.size.height / 2 - [_rememberMeButton frame].size.height / 2)];
     [_progressSpinner setFrameOrigin:CGPointMake(loginFrame.origin.x,
                                                  loginFrame.origin.y + loginFrame.size.height / 2.0 - [_progressSpinner frame].size.height / 2.0)];
     var spinnerFrame = [_progressSpinner frame];
@@ -365,6 +372,7 @@ SCLoginFailed = 1;
     [_passwordField setHidden:NO];
     [_loginButton setHidden:NO];
     [_cancelButton setHidden:NO];
+    [_rememberMeButton setHidden:NO];
     [_registeringProgressLabel setHidden:YES];
     [_loggingInProgressLabel setHidden:YES];
     [_progressSpinner setHidden:YES];

@@ -200,8 +200,9 @@ function CPWindowObjectList()
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@"test"];
+    [[testController rememberMeButton] performClick:self];
     
-    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test'}];
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : NO}];
     [self checkThatURLIsHit:@"/user/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
 }
 
@@ -212,8 +213,9 @@ function CPWindowObjectList()
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@""];
+    [[testController rememberMeButton] performClick:self];
     
-    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test'}];
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : NO}];
     [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
 }
 
@@ -224,9 +226,36 @@ function CPWindowObjectList()
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@""];
+    [[testController rememberMeButton] performClick:self];
     
-    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test'}];
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : NO}];
     [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
+}
+
+- (void)testClickingLoginWithRememberMeOn
+{
+    [self startDialogWithStub];
+    [testController _setDialogModeToLogin];
+    [[testController userField] setStringValue:@"test@test.com"];
+    [[testController passwordField] setStringValue:@"test"];
+    [[testController passwordConfirmField] setStringValue:@""];
+    
+    [self assert:[[testController rememberMeButton] state] equals:CPOnState];
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : YES}];
+    [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
+}
+
+- (void)testClickingRegisterWithRememberMeOn
+{
+    [self startDialogWithStub];
+    [testController _setDialogModeToRegister];
+    [[testController userField] setStringValue:@"test@test.com"];
+    [[testController passwordField] setStringValue:@"test"];
+    [[testController passwordConfirmField] setStringValue:@"test"];
+    
+    [self assert:[[testController rememberMeButton] state] equals:CPOnState];
+    var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : YES}];
+    [self checkThatURLIsHit:@"/user/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
 }
 
 - (void)testClickingRegisterWithMismatchedPasswords
