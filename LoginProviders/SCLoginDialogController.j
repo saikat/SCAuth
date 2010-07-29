@@ -59,6 +59,7 @@ SCLoginFailed = 1;
     @outlet CPButton _forgotPasswordLink @accessors(property=forgotPasswordLink);
     @outlet CPCheckBox _rememberMeButton @accessors(property=rememberMeButton);
     @outlet CPView _formFieldContainer @accessors(property=formFieldContainer);
+    @outlet CPButton _notice @accessors(property=notice);
 }
 
 - (void)awakeFromCib
@@ -117,6 +118,13 @@ SCLoginFailed = 1;
     [_forgotPasswordLink setFrameOrigin:CGPointMake([_passwordField frame].origin.x + [_passwordField frame].size.width - [_forgotPasswordLink frame].size.width,
                                                     [_passwordField frame].origin.y + [_passwordField frame].size.height)];
 
+    [_notice setTheme:nil];
+    [_notice setAlignment:CPLeftTextAlignment];
+    [_notice setTextColor:[CPColor colorWithHexString:"993333"]];
+    [_notice sizeToFit];
+    if (_notice._DOMElement)
+        _notice._DOMElement.className = "hover"
+
     [_rememberMeButton setFont:[CPFont fontWithName:[[_forgotPasswordLink font] familyName] size:[[_passwordLabel font] size]]];
     if (_forgotPasswordLink._DOMElement)
         _forgotPasswordLink._DOMElement.className = "hover";
@@ -138,6 +146,11 @@ SCLoginFailed = 1;
     [CPApp stopModalWithCode:CPRunStoppedResponse];  
     if (_delegate && [_delegate respondsToSelector:_callback])
         [_delegate performSelector:_callback withObject:_dialogReturnCode];
+}
+
+- (@action)detailsClicked:(id)sender
+{
+    window.open("http://blog.gomockingbird.com/mockingbird-launch-and-other-exciting-updates");
 }
 
 - (@action)forgotPasswordLinkClicked:(id)sender
@@ -297,8 +310,14 @@ SCLoginFailed = 1;
 - (void)_sizeWindowToFit
 {
     var fieldFrame = [_formFieldContainer frame];
+    var size = [[_notice stringValue] sizeWithFont:[_notice font] inWidth:fieldFrame.size.width];
+    [_notice setFrame:CGRectMake(fieldFrame.origin.x,
+                                 fieldFrame.origin.y + fieldFrame.size.height + 3.0,
+                                 size.width,
+                                 size.height + 20.0)];
+                                 
     [_window setFrameSize:CGSizeMake(fieldFrame.origin.x + fieldFrame.size.width,
-                                     fieldFrame.origin.y + fieldFrame.size.height + 30.0)];
+                                     [_notice frame].origin.y + [_notice frame].size.height + 30.0)];
 }
 
 /* @ignore */
