@@ -314,7 +314,7 @@ SCLoginFailed = 1;
     [_notice setFrame:CGRectMake(fieldFrame.origin.x,
                                  fieldFrame.origin.y + fieldFrame.size.height + 3.0,
                                  size.width,
-                                 size.height + 20.0)];
+                                 size.height + 33.0)];
                                  
     [_window setFrameSize:CGSizeMake(fieldFrame.origin.x + fieldFrame.size.width,
                                      [_notice frame].origin.y + [_notice frame].size.height + 30.0)];
