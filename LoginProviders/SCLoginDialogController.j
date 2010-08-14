@@ -497,7 +497,7 @@ SCLoginFailed = 1;
     if ([aNotification object] !== _userField)
         return;
 
-    if ([_cancelButton isHighlighted] || [_notice isHighlighted]) 
+    if ([_cancelButton isHighlighted]) 
     {
         [_window makeFirstResponder:_userField];
         return;
