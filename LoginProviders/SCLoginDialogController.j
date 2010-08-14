@@ -150,7 +150,7 @@ SCLoginFailed = 1;
 
 - (@action)detailsClicked:(id)sender
 {
-    window.open("/launchinfo/");
+    window.open("http://blog.gomockingbird.com/mockingbird-launch-and-other-exciting-updates");
 }
 
 - (@action)forgotPasswordLinkClicked:(id)sender
