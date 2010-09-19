@@ -473,6 +473,22 @@ SCLoginFailed = 1;
     return DefaultLoginDialogController;
 }
 
+- (void)loadWindow
+{
+    if (_window)
+        return;
+
+    [[CPBundle bundleForClass:[_cibOwner class]] loadCibFile:[self windowCibPath] externalNameTable:[CPDictionary dictionaryWithObject:_cibOwner forKey:CPCibOwner]];
+}
+
+- (CPString)windowCibPath
+{
+    if (_windowCibPath)
+        return _windowCibPath;
+
+    return [[CPBundle bundleForClass:[_cibOwner class]] pathForResource:_windowCibName + @".cib"];
+}
+
 - (void)controlTextDidBlur:(CPNotification)aNotification
 {
     if ([aNotification object] !== _userField)
