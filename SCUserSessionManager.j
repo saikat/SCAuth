@@ -187,8 +187,8 @@ var SCDefaultSessionManager = nil;
         if (statusCode === 200)
             return;
         if (statusCode === 404) {
+            [self _setCurrentUser:nil];
             if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidSucceed:)]) {
-                [self _setCurrentUser:nil];
                 [delegate sessionSyncDidSucceed:self];
             }
         }
