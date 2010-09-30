@@ -214,6 +214,7 @@ SCLoginFailed = 1;
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
 
     [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:[CPString JSONFromObject:loginObject]];
     _loginConnection = [_connectionClass connectionWithRequest:request
                                                        delegate:self];
@@ -228,6 +229,7 @@ SCLoginFailed = 1;
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
 
     [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:[CPString JSONFromObject:registerObject]];
     _registrationConnection = [_connectionClass connectionWithRequest:request
                                                              delegate:self];
