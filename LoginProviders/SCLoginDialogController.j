@@ -526,7 +526,6 @@ SCLoginFailed = 1;
 
 - (void)connection:(CPURLConnection)aConnection didReceiveResponse:(CPURLResponse)aResponse
 {
-    [aConnection cancel];
     if (![aResponse isKindOfClass:[CPHTTPURLResponse class]]) 
     {
         switch (aConnection) 
@@ -552,7 +551,7 @@ SCLoginFailed = 1;
     {
     case _userCheckConnection:
         if (statusCode === 200) 
-            [self _setDialogModeToLogin];
+            return;
         else if (statusCode == 404) 
             [self _setDialogModeToRegister];
         else 
@@ -561,7 +560,7 @@ SCLoginFailed = 1;
 
     case _loginConnection:
         if (statusCode === 200)  
-            [self _loginSucceededWithUsername:_loginConnection.username];
+            return;
         else 
         {
             if (statusCode === 403) 
@@ -578,7 +577,7 @@ SCLoginFailed = 1;
 
     case _registrationConnection:
         if (statusCode === 200) 
-            [self _registrationSucceededWithUsername:_registrationConnection.username];
+            return;
         else 
         {
             if (statusCode === 409) 
@@ -587,5 +586,24 @@ SCLoginFailed = 1;
                 [self _registrationFailedWithError:GenericErrorMessage statusCode:statusCode];
         }
     }
+    [aConnection cancel];
+    
 }
+
+- (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data
+{
+    [aConnection cancel];
+    switch(aConnection) 
+    {
+        case _userCheckConnection:
+            [self _setDialogModeToLogin];
+            break;
+        case _loginConnection:
+            [self _loginSucceededWithUsername:_loginConnection.username];
+            break;
+        case _registrationConnection:
+            [self _registrationSucceededWithUsername:_registrationConnection.username];
+    }
+}
+
 @end
