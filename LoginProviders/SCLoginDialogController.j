@@ -11,13 +11,13 @@
 @import <AppKit/CPWindowController.j>
 @import "../AccountValidators/SCAccountValidator.j"
 
-var DefaultLoginDialogController = nil,
-    DefaultLoginTitle = @"Login/Register",
-    LoginTitle = @"Login",
-    RegisterTitle = @"Register",
-    UserCheckErrorMessage = @"There was an error trying to find your username. Check your internet connection.",
-    GenericErrorMessage = @"Something went wrong. Check your internet connection and try again.",
-    ConnectionStatusCode = -1;
+var DefaultLoginDialogController    = nil,
+    DefaultLoginTitle               = @"Login/Register",
+    LoginTitle                      = @"Login",
+    RegisterTitle                   = @"Register",
+    UserCheckErrorMessage           = @"There was an error trying to find your username. Check your internet connection.",
+    GenericErrorMessage             = @"Something went wrong. Check your internet connection and try again.",
+    ConnectionStatusCode            = -1;
 
 SCLoginSucceeded = 0;
 SCLoginFailed = 1;
@@ -27,38 +27,37 @@ SCLoginFailed = 1;
 
     This is the controller for the default login dialog built-in to SCAuth.
 */
-
 @implementation SCLoginDialogController : CPWindowController
 {
-    unsigned _dialogReturnCode;
-    CPString _username @accessors(readonly, property=username);
-    id _delegate @accessors(property=delegate);
-    SEL _callback;
-    CPURLConnection _userCheckConnection;
-    CPURLConnection _loginConnection;
-    CPURLConnection _registrationConnection;
-    id _accountValidator @accessors(property=accountValidator);
-    // I use this for dependency injection in the tests
-    CPObject _connectionClass @accessors(property=connectionClass);
+            unsigned        _dialogReturnCode;
+            CPString        _username                   @accessors(readonly, property=username);
+            id              _delegate                   @accessors(property=delegate);
+            SEL             _callback;
+            CPURLConnection _userCheckConnection;
+            CPURLConnection _loginConnection;
+            CPURLConnection _registrationConnection;
+            id              _accountValidator           @accessors(property=accountValidator);
+            // I use this for dependency injection in the tests
+            CPObject        _connectionClass            @accessors(property=connectionClass);
 
-    @outlet CPButton _tryAgainButton @accessors(property=tryAgainButton);
-    @outlet CPTextField _subheading @accessors(property=subheading);
-    @outlet CPTextField _userLabel @accessors(property=userLabel);
-    @outlet CPTextField _userField @accessors(property=userField);
-    @outlet CPTextField _passwordLabel @accessors(property=passwordLabel);
-    @outlet CPTextField _passwordField @accessors(property=passwordField);
-    @outlet CPTextField _passwordConfirmLabel @accessors(property=passwordConfirmLabel);
-    @outlet CPTextField _passwordConfirmField @accessors(property=passwordConfirmField);
-    @outlet CPTextField _errorMessage @accessors(property=errorMessage);
-    @outlet CPButton _loginButton @accessors(property=loginButton);
-    @outlet CPButton _cancelButton @accessors(property=cancelButton);
-    @outlet CPTextField _registeringProgressLabel @accessors(property=registeringProgressLabel);
-    @outlet CPTextField _loggingInProgressLabel @accessors(property=loggingInProgressLabel);
-    @outlet CPImageView _progressSpinner @accessors(property=progressSpinner);
-    @outlet CPImageView _userCheckSpinner @accessors(property=userCheckSpinner);
-    @outlet CPButton _forgotPasswordLink @accessors(property=forgotPasswordLink);
-    @outlet CPCheckBox _rememberMeButton @accessors(property=rememberMeButton);
-    @outlet CPView _formFieldContainer @accessors(property=formFieldContainer);
+    @outlet CPButton        _tryAgainButton             @accessors(property=tryAgainButton);
+    @outlet CPTextField     _subheading                 @accessors(property=subheading);
+    @outlet CPTextField     _userLabel                  @accessors(property=userLabel);
+    @outlet CPTextField     _userField                  @accessors(property=userField);
+    @outlet CPTextField     _passwordLabel              @accessors(property=passwordLabel);
+    @outlet CPTextField     _passwordField              @accessors(property=passwordField);
+    @outlet CPTextField     _passwordConfirmLabel       @accessors(property=passwordConfirmLabel);
+    @outlet CPTextField     _passwordConfirmField       @accessors(property=passwordConfirmField);
+    @outlet CPTextField     _errorMessage               @accessors(property=errorMessage);
+    @outlet CPButton        _loginButton                @accessors(property=loginButton);
+    @outlet CPButton        _cancelButton               @accessors(property=cancelButton);
+    @outlet CPTextField     _registeringProgressLabel   @accessors(property=registeringProgressLabel);
+    @outlet CPTextField     _loggingInProgressLabel     @accessors(property=loggingInProgressLabel);
+    @outlet CPImageView     _progressSpinner            @accessors(property=progressSpinner);
+    @outlet CPImageView     _userCheckSpinner           @accessors(property=userCheckSpinner);
+    @outlet CPButton        _forgotPasswordLink         @accessors(property=forgotPasswordLink);
+    @outlet CPCheckBox      _rememberMeButton           @accessors(property=rememberMeButton);
+    @outlet CPView          _formFieldContainer         @accessors(property=formFieldContainer);
 }
 
 - (void)awakeFromCib
@@ -80,7 +79,7 @@ SCLoginFailed = 1;
     [_subheading setLineBreakMode:CPLineBreakByWordWrapping];
     [_subheading setBackgroundColor:[CPColor colorWithCalibratedRed:103.0 / 255.0 green:154.0 / 255.0 blue:205.0 / 255.0 alpha:1.0]];
     [_subheading setTextColor:[CPColor whiteColor]];
-    var border = [[CPView alloc] initWithFrame:CPRectMake(0,CPRectGetHeight([_subheading bounds])-1,CPRectGetWidth([_subheading bounds]),1)];
+    var border = [[CPView alloc] initWithFrame:CPRectMake(0, CPRectGetHeight([_subheading bounds]) - 1,CPRectGetWidth([_subheading bounds]), 1)];
     [border setAutoresizingMask: CPViewWidthSizable | CPViewMinYMargin];
     [border setBackgroundColor:[CPColor grayColor]];
     [_subheading addSubview:border];
@@ -89,7 +88,7 @@ SCLoginFailed = 1;
     [_errorMessage setLineBreakMode:CPLineBreakByWordWrapping];
     [_errorMessage setBackgroundColor:[CPColor colorWithHexString:"993333"]];
     [_errorMessage setTextColor:[CPColor whiteColor]];
-    var border = [[CPView alloc] initWithFrame:CPRectMake(0,CPRectGetHeight([_errorMessage bounds])-1,CPRectGetWidth([_errorMessage bounds]),1)];
+    var border = [[CPView alloc] initWithFrame:CPRectMake(0, CPRectGetHeight([_errorMessage bounds]) - 1, CPRectGetWidth([_errorMessage bounds]), 1)];
     [border setAutoresizingMask: CPViewWidthSizable | CPViewMinYMargin];
     [border setBackgroundColor:[CPColor grayColor]];
     [_errorMessage addSubview:border];
@@ -169,16 +168,15 @@ SCLoginFailed = 1;
             [self _setErrorMessageText:passwordError];
         else
         {
-            var userIsValid = [_accountValidator validateUsername:[_userField stringValue]];
-            if (!userIsValid)
-                [self _setErrorMessageText:@"Please enter a valid username."];
-            else
+            if ([_accountValidator validateUsername:[_userField stringValue]])
             {
                 [self _registerUser:[_userField stringValue] password:[_passwordField stringValue]];
                 [_registeringProgressLabel setHidden:NO];
                 [_progressSpinner setHidden:NO];
                 [_loginButton setHidden:YES];
             }
+            else
+                [self _setErrorMessageText:@"Please enter a valid username."];
         }
     }
     else
@@ -209,28 +207,26 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_loginUser:(CPString)username password:(CPString)password
 {
-    var shouldRemember = ([_rememberMeButton state] === CPOnState),
-        loginObject = {'username' : username, 'password' : password, 'remember' : shouldRemember},
-        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
+    var shouldRemember  = ([_rememberMeButton state] === CPOnState),
+        loginObject     = {'username' : username, 'password' : password, 'remember' : shouldRemember},
+        request         = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
 
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:[CPString JSONFromObject:loginObject]];
-    _loginConnection = [_connectionClass connectionWithRequest:request
-                                                       delegate:self];
+    _loginConnection = [_connectionClass connectionWithRequest:request delegate:self];
     _loginConnection.username = username;
 }
 
 /* @ignore */
 - (void)_registerUser:(CPString)username password:(CPString)password
 {
-    var shouldRemember = ([_rememberMeButton state] === CPOnState),
-        registerObject = {'username' : username, 'password' : password, 'remember' : shouldRemember},
-        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
+    var shouldRemember  = ([_rememberMeButton state] === CPOnState),
+        registerObject  = {'username' : username, 'password' : password, 'remember' : shouldRemember},
+        request         = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
 
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:[CPString JSONFromObject:registerObject]];
-    _registrationConnection = [_connectionClass connectionWithRequest:request
-                                                             delegate:self];
+    _registrationConnection = [_connectionClass connectionWithRequest:request delegate:self];
     _registrationConnection.username = username;
 }
 
@@ -250,8 +246,7 @@ SCLoginFailed = 1;
     var loginFrame = [_loginButton frame];
     [_cancelButton setFrameOrigin:CGPointMake(loginFrame.origin.x - [_cancelButton frame].size.width - 8.0,
                                               loginFrame.origin.y)];
-    [_rememberMeButton setFrameOrigin:CGPointMake(0,
-                                                  loginFrame.origin.y + loginFrame.size.height / 2 - [_rememberMeButton frame].size.height / 2)];
+    [_rememberMeButton setFrameOrigin:CGPointMake(0, loginFrame.origin.y + loginFrame.size.height / 2 - [_rememberMeButton frame].size.height / 2)];
     [_progressSpinner setFrameOrigin:CGPointMake(loginFrame.origin.x,
                                                  loginFrame.origin.y + loginFrame.size.height / 2.0 - [_progressSpinner frame].size.height / 2.0)];
     var spinnerFrame = [_progressSpinner frame];
@@ -309,25 +304,22 @@ SCLoginFailed = 1;
     var request = [CPURLRequest requestWithURL:([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckURL"] || @"/user/") + [_userField stringValue]];
 
     [request setHTTPMethod:@"GET"];
-    _userCheckConnection = [_connectionClass connectionWithRequest:request
-                                                         delegate:self];
+    _userCheckConnection = [_connectionClass connectionWithRequest:request delegate:self];
 }
 
 - (void)_setMessage:(CPString)aMessage inTextBox:(CPTextField)textBox
 {
-   if (!aMessage)
-   {
-        [textBox setStringValue:""];
-        [textBox setHidden:YES];
-   }
-    else
+    if (aMessage)
     {
         [textBox setStringValue:aMessage];
         [textBox setHidden:NO];
-        var fieldFrame = [_formFieldContainer frame],
-            size = [aMessage sizeWithFont:[textBox font]
-                                     inWidth:fieldFrame.size.width + 16.0];
+        var size = [aMessage sizeWithFont:[textBox font] inWidth:[_formFieldContainer frame].size.width + 16.0];
         [textBox setFrame:CGRectMake(0, 0, size.width, size.height + 18.0)];
+    }
+    else
+    {
+        [textBox setStringValue:""];
+        [textBox setHidden:YES];
     }
 }
 
@@ -403,7 +395,7 @@ SCLoginFailed = 1;
 {
     var currentErrorMessage = ([_errorMessage isHidden] ? nil : [_errorMessage stringValue]);
     [self _setDefaultHiddenSettings];
-    [self setSubheadingText:"Welcome! Looks like you're a new user.  Just choose a password to register."];
+    [self setSubheadingText:"Welcome! Looks like you're a new user. Just choose a password to register."];
     if ([_loginButton title] === RegisterTitle && currentErrorMessage)
         [self _setErrorMessageText:currentErrorMessage];
     [_loginButton setTitle:RegisterTitle];
@@ -549,45 +541,44 @@ SCLoginFailed = 1;
     var statusCode = [aResponse statusCode];
     switch (aConnection)
     {
-    case _userCheckConnection:
-        if (statusCode === 200)
-            return;
-        else if (statusCode == 404)
-            [self _setDialogModeToRegister];
-        else
-            [self _userCheckFailedWithStatusCode:statusCode];
-        break;
+        case _userCheckConnection:
+            if (statusCode === 200)
+                return;
+            else if (statusCode == 404)
+                [self _setDialogModeToRegister];
+            else
+                [self _userCheckFailedWithStatusCode:statusCode];
+            break;
 
-    case _loginConnection:
-        if (statusCode === 200)
-            return;
-        else
-        {
-            if (statusCode === 403)
+        case _loginConnection:
+            if (statusCode === 200)
+                return;
+            else
             {
-                // Between clicking login and the response, the dialog switched to register mode
-                // so we no longer care about this login error
-                if ([_loginButton title] !== RegisterTitle)
-                    [self _loginFailedWithError:@"Incorrect username or password." statusCode:statusCode];
+                if (statusCode === 403)
+                {
+                    // Between clicking login and the response, the dialog switched to register mode
+                    // so we no longer care about this login error
+                    if ([_loginButton title] !== RegisterTitle)
+                        [self _loginFailedWithError:@"Incorrect username or password." statusCode:statusCode];
+                }
+                else
+                    [self _loginFailedWithError:GenericErrorMessage statusCode:statusCode];
             }
-            else
-                [self _loginFailedWithError:GenericErrorMessage statusCode:statusCode];
-        }
-        break;
+            break;
 
-    case _registrationConnection:
-        if (statusCode === 200)
-            return;
-        else
-        {
-            if (statusCode === 409)
-                [self _setDialogModeToLogin];
+        case _registrationConnection:
+            if (statusCode === 200)
+                return;
             else
-                [self _registrationFailedWithError:GenericErrorMessage statusCode:statusCode];
-        }
+            {
+                if (statusCode === 409)
+                    [self _setDialogModeToLogin];
+                else
+                    [self _registrationFailedWithError:GenericErrorMessage statusCode:statusCode];
+            }
     }
     [aConnection cancel];
-
 }
 
 - (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data

@@ -18,15 +18,15 @@ var SCDefaultSessionManager = nil;
 /*!
     @class SCUserSessionManager
 
-    This class manages a user's session data.  It is also responsible for dealing with 401
+    This class manages a user's session data. It is also responsible for dealing with 401
     response codes from the backend and will automatically deal with these by using its
     login provider to attempt to log the user in.
 */
 
 @implementation SCUserSessionManager : CPUserSessionManager
 {
-    id _loginDelegate;
-    id _loginProvider @accessors(property=loginProvider);
+    id              _loginDelegate;
+    id              _loginProvider          @accessors(property=loginProvider);
     CPURLConnection _loginConnection;
     CPURLConnection _logoutConnection;
     CPURLConnection _sessionSyncConnection;
@@ -37,8 +37,6 @@ var SCDefaultSessionManager = nil;
     self = [super init];
     if (self)
     {
-        _loginDelegate = nil;
-        _userIdentifier = nil;
         [self setLoginProvider:[SCLoginDialogController defaultController]];
     }
     return self;
@@ -69,13 +67,12 @@ var SCDefaultSessionManager = nil;
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthSyncURL"] || @"/session/"];
     [request setHTTPMethod:@"GET"];
 
-    _sessionSyncConnection = [CPURLConnection connectionWithRequest:request
-                                                           delegate:self];
+    _sessionSyncConnection = [CPURLConnection connectionWithRequest:request delegate:self];
     _sessionSyncConnection.delegate = delegate;
 }
 
 /*!
-    Logs out the current user.  Expects the backend to send a 200 HTTP Response to indicate that
+    Logs out the current user. Expects the backend to send a 200 HTTP Response to indicate that
     the log out succeeded.
     @param delegate - Can implement - (void)logoutDidFail:(CPUserSessionManager)sessionManager
            which is called when the logout fails. Can also implement
@@ -87,8 +84,7 @@ var SCDefaultSessionManager = nil;
     var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLogoutURL"] || @"/session/"];
     [request setHTTPMethod:@"DELETE"];
 
-    _logoutConnection = [CPURLConnection connectionWithRequest:request
-                                                      delegate:self];
+    _logoutConnection = [CPURLConnection connectionWithRequest:request delegate:self];
     _logoutConnection.delegate = delegate
 }
 
@@ -120,7 +116,7 @@ var SCDefaultSessionManager = nil;
 /* @ignore */
 - (void)_loginFinishedWithCode:(unsigned)returnCode
 {
-    var selectorToPerform = nil;
+    var selectorToPerform;
     if (returnCode === SCLoginSucceeded)
     {
         [self _setCurrentUser:[_loginProvider username]];
@@ -131,21 +127,22 @@ var SCDefaultSessionManager = nil;
 
     if (selectorToPerform && _loginDelegate && [_loginDelegate respondsToSelector:selectorToPerform])
         [_loginDelegate performSelector:selectorToPerform withObject:self];
+
     _loginDelegate = nil;
 }
 
 /* @ignore */
 - (void)_setCurrentUser:(CPString)aUser
 {
-    if (!aUser)
-    {
-        [self setStatus:CPUserSessionLoggedOutStatus];
-        [self setUserIdentifier:nil];
-    }
-    else
+    if (aUser)
     {
         [self setStatus:CPUserSessionLoggedInStatus];
         [self setUserIdentifier:aUser];
+    }
+    else
+    {
+        [self setStatus:CPUserSessionLoggedOutStatus];
+        [self setUserIdentifier:nil];
     }
 }
 
@@ -192,9 +189,7 @@ var SCDefaultSessionManager = nil;
         {
             [self _setCurrentUser:nil];
             if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidSucceed:)])
-            {
                 [delegate sessionSyncDidSucceed:self];
-            }
         }
     }
     else if (aConnection === _logoutConnection)
@@ -214,18 +209,16 @@ var SCDefaultSessionManager = nil;
 
 - (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data
 {
-    if (!data)
+    if (!data || aConnection != _sessionSyncConnection)
         return;
-    var responseBody = [data objectFromJSON];
 
-    if (aConnection === _sessionSyncConnection)
-    {
-        var delegate = aConnection.delegate;
-        if (responseBody.username)
-            [self _setCurrentUser:responseBody.username];
-        if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidSucceed:)])
-            [delegate sessionSyncDidSucceed:self];
-    }
+    var responseBody = [data objectFromJSON],
+        delegate = aConnection.delegate;
+
+    if (responseBody.username)
+        [self _setCurrentUser:responseBody.username];
+    if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidSucceed:)])
+        [delegate sessionSyncDidSucceed:self];
 }
 
 /* @ignore */
@@ -254,6 +247,7 @@ var SCDefaultSessionManager = nil;
     [_loginConnection start];
     _loginConnection = nil;
 }
+
 @end
 
 [CPURLConnection setClassDelegate:[SCUserSessionManager defaultManager]];

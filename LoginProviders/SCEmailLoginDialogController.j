@@ -13,7 +13,10 @@
 @import "SCLoginDialogController.j"
 
 var DefaultLoginDialogController = nil;
-@implementation SCEmailLoginDialogController : SCLoginDialogController{ }
+
+@implementation SCEmailLoginDialogController : SCLoginDialogController
+{
+}
 
 - (void)awakeFromCib
 {
@@ -40,4 +43,5 @@ var DefaultLoginDialogController = nil;
         DefaultLoginDialogController = [self newLoginDialogController];
     return DefaultLoginDialogController;
 }
+
 @end
