@@ -5,7 +5,7 @@
  * Created by Saikat Chakrabarti on April 7, 2010.
  *
  * See LICENSE file for license information.
- * 
+ *
  */
 
 @import <AppKit/CPWindowController.j>
@@ -36,7 +36,7 @@ var DefaultLoginDialogController = nil;
 
 + (SCLoginDialogController)defaultController
 {
-    if (!DefaultLoginDialogController) 
+    if (!DefaultLoginDialogController)
         DefaultLoginDialogController = [self newLoginDialogController];
     return DefaultLoginDialogController;
 }

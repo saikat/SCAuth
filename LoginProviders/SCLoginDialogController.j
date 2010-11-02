@@ -5,7 +5,7 @@
  * Created by Saikat Chakrabarti on April 7, 2010.
  *
  * See LICENSE file for license information.
- * 
+ *
  */
 
 @import <AppKit/CPWindowController.j>
@@ -22,7 +22,7 @@ var DefaultLoginDialogController = nil,
 SCLoginSucceeded = 0;
 SCLoginFailed = 1;
 
-/*! 
+/*!
     @class SCLoginDialogController
 
     This is the controller for the default login dialog built-in to SCAuth.
@@ -107,7 +107,7 @@ SCLoginFailed = 1;
         _tryAgainButton._DOMElement.style.textDecoration = "underline";
     }
     [_tryAgainButton sizeToFit];
-    // Without this, the button screws up in FF and wraps. 
+    // Without this, the button screws up in FF and wraps.
     [_tryAgainButton setFrameSize:CGSizeMake([_tryAgainButton frame].size.width + 5.0, [_tryAgainButton frame].size.height)];
 
     [_forgotPasswordLink setFont:[CPFont fontWithName:[[_forgotPasswordLink font] familyName] size:10.0]];
@@ -135,7 +135,7 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_loginDialogClosed:(CPNotification)aNotification
 {
-    [CPApp stopModalWithCode:CPRunStoppedResponse];  
+    [CPApp stopModalWithCode:CPRunStoppedResponse];
     if (_delegate && [_delegate respondsToSelector:_callback])
         [_delegate performSelector:_callback withObject:_dialogReturnCode];
 }
@@ -161,18 +161,18 @@ SCLoginFailed = 1;
 
 - (@action)login:(id)sender
 {
-    if ([_loginButton title] === RegisterTitle) 
+    if ([_loginButton title] === RegisterTitle)
     {
         var passwordError = [_accountValidator validatePassword:[_passwordField stringValue]
                                             withConfirmPassword:[_passwordConfirmField stringValue]];
-        if (passwordError) 
+        if (passwordError)
             [self _setErrorMessageText:passwordError];
-        else 
+        else
         {
             var userIsValid = [_accountValidator validateUsername:[_userField stringValue]];
-            if (!userIsValid) 
+            if (!userIsValid)
                 [self _setErrorMessageText:@"Please enter a valid username."];
-            else 
+            else
             {
                 [self _registerUser:[_userField stringValue] password:[_passwordField stringValue]];
                 [_registeringProgressLabel setHidden:NO];
@@ -181,7 +181,7 @@ SCLoginFailed = 1;
             }
         }
     }
-    else 
+    else
     {
         [self _loginUser:[_userField stringValue] password:[_passwordField stringValue]];
         [_loggingInProgressLabel setHidden:NO];
@@ -238,7 +238,7 @@ SCLoginFailed = 1;
 - (CGPoint)_setButtonOrigins
 {
     var frameToUse = [_passwordConfirmField frame];
-    if ([_passwordConfirmField isHidden]) 
+    if ([_passwordConfirmField isHidden])
     {
         if ([_forgotPasswordLink isHidden])
             frameToUse = [_passwordField frame];
@@ -280,12 +280,12 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_setKeyViews
 {
-    if ([_passwordConfirmField isHidden]) 
+    if ([_passwordConfirmField isHidden])
     {
         [_userField setNextKeyView:_passwordField];
         [_passwordField setNextKeyView:_userField];
-    } 
-    else 
+    }
+    else
     {
         [_userField setNextKeyView:_passwordField];
         [_passwordField setNextKeyView:_passwordConfirmField];
@@ -307,7 +307,7 @@ SCLoginFailed = 1;
     [_userCheckSpinner setHidden:NO];
 
     var request = [CPURLRequest requestWithURL:([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckURL"] || @"/user/") + [_userField stringValue]];
-  
+
     [request setHTTPMethod:@"GET"];
     _userCheckConnection = [_connectionClass connectionWithRequest:request
                                                          delegate:self];
@@ -315,12 +315,12 @@ SCLoginFailed = 1;
 
 - (void)_setMessage:(CPString)aMessage inTextBox:(CPTextField)textBox
 {
-   if (!aMessage) 
+   if (!aMessage)
    {
         [textBox setStringValue:""];
         [textBox setHidden:YES];
    }
-    else 
+    else
     {
         [textBox setStringValue:aMessage];
         [textBox setHidden:NO];
@@ -341,7 +341,7 @@ SCLoginFailed = 1;
         [_errorMessage setHidden:YES];
     [self _sizeAndPositionFormFieldContainer];
     [self _sizeWindowToFit];
-} 
+}
 
 /* @ignore */
 - (void)_setErrorMessageText:(CPString)anErrorMessage
@@ -393,7 +393,7 @@ SCLoginFailed = 1;
     [_loginButton setTitle:LoginTitle];
     [_passwordConfirmLabel setHidden:YES];
     [_passwordConfirmField setHidden:YES];
-    [_passwordConfirmField setStringValue:""];    
+    [_passwordConfirmField setStringValue:""];
     [self _displayForgotPasswordLink];
     [self _layout];
 }
@@ -431,14 +431,14 @@ SCLoginFailed = 1;
     [self _setButtonOrigins];
     [self _sizeAndPositionFormFieldContainer];
     [self _setKeyViews];
-    [self _sizeWindowToFit];				
+    [self _sizeWindowToFit];
 }
 
 /*!
     Creates a new login dialog and run it modally.  The login dialog can be used to either
     log a user in or register a new user.  It expects the backend to respond to certain
     URLs correctly - see README.markdown.
-    @param aDelegate - Should implement aCallback, which will get called with either 
+    @param aDelegate - Should implement aCallback, which will get called with either
            SCLoginSucceeded or SCLoginFailed when the dialog closes
     @param aCallback - Gets called on dialog close
  */
@@ -468,7 +468,7 @@ SCLoginFailed = 1;
  */
 + (SCLoginDialogController)defaultController
 {
-    if (!DefaultLoginDialogController) 
+    if (!DefaultLoginDialogController)
         DefaultLoginDialogController = [self newLoginDialogController];
     return DefaultLoginDialogController;
 }
@@ -478,7 +478,7 @@ SCLoginFailed = 1;
     if ([aNotification object] !== _userField)
         return;
 
-    if ([_cancelButton isHighlighted]) 
+    if ([_cancelButton isHighlighted])
     {
         [_window makeFirstResponder:_userField];
         return;
@@ -502,11 +502,11 @@ SCLoginFailed = 1;
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException
 {
-    if (connection === _loginConnection) 
+    if (connection === _loginConnection)
         [self _loginFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
-    else if (connection === _registrationConnection) 
+    else if (connection === _registrationConnection)
         [self _registrationFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
-    else if (connection === _userCheckConnection) 
+    else if (connection === _userCheckConnection)
         [self _userCheckFailedWithStatusCode:ConnectionStatusCode];
 }
 
@@ -526,14 +526,14 @@ SCLoginFailed = 1;
 
 - (void)connection:(CPURLConnection)aConnection didReceiveResponse:(CPURLResponse)aResponse
 {
-    if (![aResponse isKindOfClass:[CPHTTPURLResponse class]]) 
+    if (![aResponse isKindOfClass:[CPHTTPURLResponse class]])
     {
-        switch (aConnection) 
+        switch (aConnection)
         {
         case _userCheckConnection:
             [self _userCheckFailedWithStatusCode:ConnectionStatusCode];
             break;
-            
+
         case _loginConnection:
             [self _loginFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
             break;
@@ -545,25 +545,25 @@ SCLoginFailed = 1;
         }
         return;
     }
-  
+
     var statusCode = [aResponse statusCode];
-    switch(aConnection) 
+    switch(aConnection)
     {
     case _userCheckConnection:
-        if (statusCode === 200) 
+        if (statusCode === 200)
             return;
-        else if (statusCode == 404) 
+        else if (statusCode == 404)
             [self _setDialogModeToRegister];
-        else 
+        else
             [self _userCheckFailedWithStatusCode:statusCode];
         break;
 
     case _loginConnection:
-        if (statusCode === 200)  
+        if (statusCode === 200)
             return;
-        else 
+        else
         {
-            if (statusCode === 403) 
+            if (statusCode === 403)
             {
                 // Between clicking login and the response, the dialog switched to register mode
                 // so we no longer care about this login error
@@ -576,24 +576,24 @@ SCLoginFailed = 1;
         break;
 
     case _registrationConnection:
-        if (statusCode === 200) 
+        if (statusCode === 200)
             return;
-        else 
+        else
         {
-            if (statusCode === 409) 
+            if (statusCode === 409)
                 [self _setDialogModeToLogin];
             else
                 [self _registrationFailedWithError:GenericErrorMessage statusCode:statusCode];
         }
     }
     [aConnection cancel];
-    
+
 }
 
 - (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data
 {
     [aConnection cancel];
-    switch(aConnection) 
+    switch(aConnection)
     {
         case _userCheckConnection:
             [self _setDialogModeToLogin];

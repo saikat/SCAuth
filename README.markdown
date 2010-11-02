@@ -17,14 +17,14 @@ How to use
 ==========
 
 ### Using what's already there ###
-Include the session manager in your code with `@import <SCAuth/SCUserSessionManager.j>`.  As soon as you do this, SCAuth will begin checking the response on every CPURLConnection your application makes for return codes of 401 (the HTTP response code for Unauthorized).  If your backend returns an HTTP response with status code 401, SCAuth will show a login dialog to the user.  The session manager will send `- (void)sessionManagerDidInterceptAuthenticationChallenge:(SCUserSessionManager)aSessionManager forConnection:(CPURLConnection)aConnection` to the original connection's delegate once the login dialog appears - you can use this hook to set your own state on the login provider or session manager (if you are using the default login dialog, you can call setSubheadingText in this method to set a message in the login dialog).  If the user logs in, the original request will be completed - otherwise, the original request will fail.  You can also display the login dialog manually by calling `- [SCUserSessionManager login:]`.  Look at SCUserSessionManager.j for other API methods to access and modify the user's current session.  
+Include the session manager in your code with `@import <SCAuth/SCUserSessionManager.j>`.  As soon as you do this, SCAuth will begin checking the response on every CPURLConnection your application makes for return codes of 401 (the HTTP response code for Unauthorized).  If your backend returns an HTTP response with status code 401, SCAuth will show a login dialog to the user.  The session manager will send `- (void)sessionManagerDidInterceptAuthenticationChallenge:(SCUserSessionManager)aSessionManager forConnection:(CPURLConnection)aConnection` to the original connection's delegate once the login dialog appears - you can use this hook to set your own state on the login provider or session manager (if you are using the default login dialog, you can call setSubheadingText in this method to set a message in the login dialog).  If the user logs in, the original request will be completed - otherwise, the original request will fail.  You can also display the login dialog manually by calling `- [SCUserSessionManager login:]`.  Look at SCUserSessionManager.j for other API methods to access and modify the user's current session.
 
 SCAuth also relies on your backend responding to certain URLs.  To specify the URLs used by SCAuth, you need to specify values for the following keys in your application's Info.plist:
 
-*	SCAuthForgotPasswordURL 
+*	SCAuthForgotPasswordURL
   	* Defaults to nil, which doesn't show a forgot password link in the login dialog
   	* Backend just needs to handle a GET request to this URL properly by displaying a statick page where the user can change his password
-*	SCAuthLoginURL 
+*	SCAuthLoginURL
 	* Used for login
 	* Defaults to "/session/"
 	* Called with POST HTTP Method
@@ -36,13 +36,13 @@ SCAuth also relies on your backend responding to certain URLs.  To specify the U
 	* Called with POST HTTP Method
 	* Sends data as JSON, where the json object has a username and a password property
 	* Expects backend to send HTTP response with status 200 for success, or 409 if the username is already registered
-*	SCAuthUserCheckURL 
+*	SCAuthUserCheckURL
 	* Used to check the existence of a specified username
 	* Defaults to "/user/"
 	* Called with GET HTTP Method
 	* Sends a URL parameter that is the checked username - so the actual request is sent to SCAuthUserCheckURL/<username>
 	* Expects backend to send HTTP response with status 200 if the username is found, or 404 if the username is not found
-*	SCAuthSyncURL 
+*	SCAuthSyncURL
 	* Used to get the current session information
 	* Defaults to "/session/"
 	* Called with GET HTTP Method

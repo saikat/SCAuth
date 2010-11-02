@@ -5,7 +5,7 @@
  * Created by Saikat Chakrabarti on April 7, 2010.
  *
  * See LICENSE file for license information.
- * 
+ *
  */
 
 @import "../LoginProviders/SCLoginDialogController.j"
@@ -23,7 +23,7 @@ function CPWindowObjectList()
     return [];
 }
 @implementation SCLoginDialogControllerTest : OJTestCase
-{ 
+{
     OJMoq platformWindowMock;
     SCLoginDialogControllerTest testController;
 }
@@ -40,7 +40,7 @@ function CPWindowObjectList()
     // Cappuccino is expecting a DOM for these methods.
     platformWindowMock = moq(platformWindowBase);
     [platformWindowMock selector:@selector(setContentRect:) returns:nil];
-    [platformWindowMock selector:@selector(orderOut:) returns:nil];    
+    [platformWindowMock selector:@selector(orderOut:) returns:nil];
     [platformWindowMock selector:@selector(orderFront:) returns:nil];
     [platformWindowMock selector:@selector(order:window:relativeTo:) returns:nil];
     [windowBase setPlatformWindow:platformWindowMock];
@@ -132,10 +132,10 @@ function CPWindowObjectList()
 - (void)testInitialStateOfDialogWhenForgotPasswordInformationExists
 {
     var mainBundle = [CPBundle mainBundle];
-    mainBundle._bundle.valueForInfoDictionaryKey = function(aKey) 
+    mainBundle._bundle.valueForInfoDictionaryKey = function(aKey)
     {
-        if(aKey === "SCAuthForgotPasswordURL") 
-            return "forgot_password_url"; 
+        if(aKey === "SCAuthForgotPasswordURL")
+            return "forgot_password_url";
         return nil;
     }
     [self startDialogWithStub];
@@ -161,13 +161,13 @@ function CPWindowObjectList()
 {
     [self startDialogWithStub];
     var mainBundle = [CPBundle mainBundle];
-    mainBundle._bundle.valueForInfoDictionaryKey = function(aKey) 
+    mainBundle._bundle.valueForInfoDictionaryKey = function(aKey)
     {
-        if(aKey === "SCForgotPasswordURL") 
-            return "forgot_password_url"; 
+        if(aKey === "SCForgotPasswordURL")
+            return "forgot_password_url";
         return nil;
     }
-    
+
     [testController forgotPasswordLinkClicked:self];
 }
 
@@ -201,7 +201,7 @@ function CPWindowObjectList()
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@"test"];
     [[testController rememberMeButton] performClick:self];
-    
+
     var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : NO}];
     [self checkThatURLIsHit:@"/user/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
 }
@@ -214,7 +214,7 @@ function CPWindowObjectList()
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@""];
     [[testController rememberMeButton] performClick:self];
-    
+
     var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : NO}];
     [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
 }
@@ -227,7 +227,7 @@ function CPWindowObjectList()
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@""];
     [[testController rememberMeButton] performClick:self];
-    
+
     var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : NO}];
     [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
 }
@@ -239,7 +239,7 @@ function CPWindowObjectList()
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@""];
-    
+
     [self assert:[[testController rememberMeButton] state] equals:CPOnState];
     var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : YES}];
     [self checkThatURLIsHit:@"/session/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
@@ -252,7 +252,7 @@ function CPWindowObjectList()
     [[testController userField] setStringValue:@"test@test.com"];
     [[testController passwordField] setStringValue:@"test"];
     [[testController passwordConfirmField] setStringValue:@"test"];
-    
+
     [self assert:[[testController rememberMeButton] state] equals:CPOnState];
     var body = [CPString JSONFromObject:{'username' : 'test@test.com', 'password' : 'test', 'remember' : YES}];
     [self checkThatURLIsHit:@"/user/" withMethod:@"POST" withBody:body whenControlIsClicked:[testController loginButton]];
