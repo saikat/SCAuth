@@ -134,7 +134,7 @@ function CPWindowObjectList()
     var mainBundle = [CPBundle mainBundle];
     mainBundle._bundle.valueForInfoDictionaryKey = function(aKey)
     {
-        if(aKey === "SCAuthForgotPasswordURL")
+        if (aKey === "SCAuthForgotPasswordURL")
             return "forgot_password_url";
         return nil;
     }
@@ -163,7 +163,7 @@ function CPWindowObjectList()
     var mainBundle = [CPBundle mainBundle];
     mainBundle._bundle.valueForInfoDictionaryKey = function(aKey)
     {
-        if(aKey === "SCForgotPasswordURL")
+        if (aKey === "SCForgotPasswordURL")
             return "forgot_password_url";
         return nil;
     }

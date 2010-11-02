@@ -35,7 +35,8 @@ var SCDefaultSessionManager = nil;
 - (id)init
 {
     self = [super init];
-    if (self) {
+    if (self)
+    {
         _loginDelegate = nil;
         _userIdentifier = nil;
         [self setLoginProvider:[SCLoginDialogController defaultController]];
@@ -164,7 +165,8 @@ var SCDefaultSessionManager = nil;
 - (void)connection:(CPURLConnection)aConnection didReceiveResponse:(CPURLResponse)aResponse
 {
     var delegate = aConnection.delegate;
-    if (![aResponse isKindOfClass:[CPHTTPURLResponse class]]) {
+    if (![aResponse isKindOfClass:[CPHTTPURLResponse class]])
+    {
         [aConnection cancel];
         if (aConnection === _sessionSyncConnection)
         {
@@ -186,16 +188,20 @@ var SCDefaultSessionManager = nil;
     {
         if (statusCode === 200)
             return;
-        if (statusCode === 404) {
+        if (statusCode === 404)
+        {
             [self _setCurrentUser:nil];
-            if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidSucceed:)]) {
+            if (delegate && [delegate respondsToSelector:@selector(sessionSyncDidSucceed:)])
+            {
                 [delegate sessionSyncDidSucceed:self];
             }
         }
     }
-    else if (aConnection === _logoutConnection) {
+    else if (aConnection === _logoutConnection)
+    {
         [aConnection cancel];
-        if (statusCode === 200) {
+        if (statusCode === 200)
+        {
             [self _setCurrentUser:nil];
             if (delegate && [delegate respondsToSelector:@selector(logoutDidSucceed:)])
                 [delegate logoutDidSucceed:self];
@@ -212,7 +218,8 @@ var SCDefaultSessionManager = nil;
         return;
     var responseBody = [data objectFromJSON];
 
-    if (aConnection === _sessionSyncConnection) {
+    if (aConnection === _sessionSyncConnection)
+    {
         var delegate = aConnection.delegate;
         if (responseBody.username)
             [self _setCurrentUser:responseBody.username];

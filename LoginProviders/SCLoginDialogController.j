@@ -209,9 +209,9 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_loginUser:(CPString)username password:(CPString)password
 {
-    var shouldRemember = ([_rememberMeButton state] === CPOnState);
-    var loginObject = {'username' : username, 'password' : password, 'remember' : shouldRemember};
-    var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
+    var shouldRemember = ([_rememberMeButton state] === CPOnState),
+        loginObject = {'username' : username, 'password' : password, 'remember' : shouldRemember},
+        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthLoginURL"] || @"/session/"];
 
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:[CPString JSONFromObject:loginObject]];
@@ -223,9 +223,9 @@ SCLoginFailed = 1;
 /* @ignore */
 - (void)_registerUser:(CPString)username password:(CPString)password
 {
-    var shouldRemember = ([_rememberMeButton state] === CPOnState);
-    var registerObject = {'username' : username, 'password' : password, 'remember' : shouldRemember};
-    var request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
+    var shouldRemember = ([_rememberMeButton state] === CPOnState),
+        registerObject = {'username' : username, 'password' : password, 'remember' : shouldRemember},
+        request = [CPURLRequest requestWithURL:[[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthRegistrationURL"] || @"/user/"];
 
     [request setHTTPMethod:@"POST"];
     [request setHTTPBody:[CPString JSONFromObject:registerObject]];
@@ -547,7 +547,7 @@ SCLoginFailed = 1;
     }
 
     var statusCode = [aResponse statusCode];
-    switch(aConnection)
+    switch (aConnection)
     {
     case _userCheckConnection:
         if (statusCode === 200)
@@ -593,7 +593,7 @@ SCLoginFailed = 1;
 - (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)data
 {
     [aConnection cancel];
-    switch(aConnection)
+    switch (aConnection)
     {
         case _userCheckConnection:
             [self _setDialogModeToLogin];
