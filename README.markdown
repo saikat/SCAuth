@@ -69,3 +69,10 @@ The future
 ==========
 
 The user session manager should be able to manage more than just the login state and current user's username.  In the future, there will be various login providers (like facebook connect, or OAuth) that can be dropped in using the setLoginProvider call on SCUserSessionManager.
+
+Authors
+=======
+Maintained by Saikat Chakrabarti (https://github.com/saikat)
+Many thanks for contributions from:
+Ben Langfeld (https://github.com/benlangfeld)
+Thomas Reynolds (https://github.com/tdreyno)
