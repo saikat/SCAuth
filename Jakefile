@@ -5,7 +5,7 @@
  * Created by Saikat Chakrabarti on April 7, 2010.
  *
  * See LICENSE file for license information.
- * 
+ *
  */
 
 var OS = require("os"),
@@ -20,7 +20,7 @@ var OS = require("os"),
     configuration = ENV["CONFIG"] || ENV["CONFIGURATION"] || ENV["c"] || "Debug";
 
 framework ("SCAuth", function(task)
-{   
+{
     task.setBuildIntermediatesPath(FILE.join("Build", "SCAuth.build", configuration));
     task.setBuildPath(FILE.join("Build", configuration));
 
@@ -63,17 +63,17 @@ task ("symlink", ["release", "debug"], function()
     // TODO: this should not be hardcoded to /usr/local - not sure how
     // to actually find the path to narwhal right now though.
     var frameworksPath = FILE.join("", "usr", "local", "narwhal", "packages", "cappuccino", "Frameworks");
-    
+
     ["Release", "Debug"].forEach(function(aConfig)
     {
         print("Symlinking " + aConfig + " ...");
-        
+
         if (aConfig === "Debug")
             frameworksPath = FILE.join(frameworksPath, aConfig);
-        
+
         var buildPath = FILE.absolute(FILE.join("Build", aConfig, "SCAuth")),
             symlinkPath = FILE.join(frameworksPath, "SCAuth");
-        
+
         OS.system(["sudo", "ln", "-s", buildPath, symlinkPath]);
     });
 });

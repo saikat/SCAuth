@@ -5,14 +5,14 @@
  * Created by Saikat Chakrabarti on April 7, 2010.
  *
  * See LICENSE file for license information.
- * 
+ *
  */
 
 @import "../LoginProviders/SCEmailLoginDialogController.j"
 @import <AppKit/AppKit.j>
 
 @implementation SCEmailLoginDialogControllerTest : OJTestCase
-{ 
+{
     SCEmailLoginDialogController testDialogController;
 }
 - (void)setUp
