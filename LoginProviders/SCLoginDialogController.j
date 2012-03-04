@@ -493,7 +493,9 @@ SCLoginFailed = 1;
         [_window makeFirstResponder:_userField];
         return;
     }
-    [self _checkUser];
+    
+    if ([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckURL"])
+        [self _checkUser];
 }
 
 /* @ignore */
