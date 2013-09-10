@@ -8,6 +8,7 @@
  *
  */
 
+@import <OJUnit/OJTestCase.j>
 @import "../LoginProviders/SCEmailLoginDialogController.j"
 @import <AppKit/AppKit.j>
 

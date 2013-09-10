@@ -493,7 +493,7 @@ SCLoginFailed = 1;
         [_window makeFirstResponder:_userField];
         return;
     }
-    
+
     if ([[CPBundle mainBundle] objectForInfoDictionaryKey:@"SCAuthUserCheckURL"])
         [self _checkUser];
 }
@@ -514,11 +514,11 @@ SCLoginFailed = 1;
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException
 {
-    if (connection === _loginConnection)
+    if (aConnection === _loginConnection)
         [self _loginFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
-    else if (connection === _registrationConnection)
+    else if (aConnection === _registrationConnection)
         [self _registrationFailedWithError:GenericErrorMessage statusCode:ConnectionStatusCode];
-    else if (connection === _userCheckConnection)
+    else if (aConnection === _userCheckConnection)
         [self _userCheckFailedWithStatusCode:ConnectionStatusCode];
 }
 

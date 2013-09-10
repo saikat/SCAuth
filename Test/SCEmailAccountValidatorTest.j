@@ -8,6 +8,7 @@
  *
  */
 
+@import <OJUnit/OJTestCase.j>
 @import "../AccountValidators/SCEmailAccountValidator.j"
 
 @implementation SCEmailAccountValidatorTest : OJTestCase

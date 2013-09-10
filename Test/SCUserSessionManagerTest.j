@@ -8,6 +8,7 @@
  *
  */
 
+@import <OJUnit/OJTestCase.j>
 @import "../SCUserSessionManager.j"
 
 @implementation SCUserSessionManagerTest : OJTestCase
